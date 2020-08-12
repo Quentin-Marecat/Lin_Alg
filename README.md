@@ -12,8 +12,10 @@ Here is the list of all packaging of the depository :
 
 Next step :
 * SVD factorization
-* Lanczos diagonalization
+* Lanczos + Davidson diagonalization
 * A.**x** = **b** solution
+* Gauss-Seidel inversion
+* Eigenvectors using inverse iterations
 
 All rights are strictly reserved to Quentin Marecat
 For any report or suggestion, please contact quentin.marecat@etu.umontpellier.fr
