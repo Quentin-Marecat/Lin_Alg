@@ -12,10 +12,13 @@ operation_mat.f90 IS NECESSARY
 TO COMPUTE, PLEASE USE THE COMMAND
 
 QR INVERSION
-gfortran '-fflags' -o 'name_exe'.x test.f90 InvQR.f90 'path_QRHouseholder_sub'/*.f90  'path_ope_mat_sub'operation_mat.f90&& ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 InvQR.f90 'path_QRHouseholder_sub'*.f90  'path_ope_mat_sub'operation_mat.f90&& ./'name_exe'.x
 
 LU INVERSION
-gfortran '-fflags' -o 'name_exe'.x test.f90 InvLU.f90 'path_LU_sub'/*.f90 'path_Lin_Sys_sub'/LU_Mat.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 InvLU.f90 'path_LU_sub'*.f90 'path_Lin_Sys_sub'LU_Mat.f90 && ./'name_exe'.x
+
+JACOBI INVERSION
+gfortran -o 'name_exe'.x test.f90 InvJac.f90 'path_lin_Jac_sub'Jacobi.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
 
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 

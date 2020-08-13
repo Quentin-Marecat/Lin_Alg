@@ -1,4 +1,4 @@
-SUBROUTINE INVMATQR(DIM,MATRIX,INVMATRIX)
+SUBROUTINE INVQR(DIM,MATRIX,INVMATRIX)
     ! ------------------------------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE INVERSE THE MATRIX USING QR HOUSEHOLDER FACTORIZATION ----------------------------------- !
     ! --- housestep.f90 AND QRhouse.f90 AND operation_mat.f90 ARE USEFULL FOR THIS ALGORTIHME AND MUS BE COMPIL --- !
