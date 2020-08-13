@@ -9,11 +9,11 @@ Here is the list of all packaging of the depository :
 * Gram-Schmidt orthonormalization
 * Matrice inversion
 * RQ process diagonalization
+* A.**x** = **b** solution with residual improvement
 
 Next step :
 * SVD factorization
 * Lanczos + Davidson diagonalization
-* A.**x** = **b** solution
 * Gauss-Seidel inversion
 * Eigenvectors using inverse iterations
 
