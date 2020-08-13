@@ -7,8 +7,8 @@ SUBROUTINE DIAGMATSYM(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
     ! --- operation_mat.f90 tridiag.f90 QRhouse.f90 and housestep.f90 ARE NECESSARY --- !
     ! --------------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS = 1.D-10, EPS0 = 1.D-12
-    INTEGER, PARAMETER :: MAXSTEP = 1D5
+    REAL*8, PARAMETER :: CONV = 1.D-7, EPS0 = 1.D-14
+    INTEGER, PARAMETER :: MAXSTEP = 1D3
     LOGICAL :: TEST
     LOGICAL,INTENT(IN) :: SYM
     INTEGER, INTENT(IN) :: DIM
@@ -16,9 +16,10 @@ SUBROUTINE DIAGMATSYM(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
     REAL*8, INTENT(OUT) :: EIGENVEC(DIM,DIM), EIGENVAL(DIM)
     REAL*8 :: TRISUP(DIM,DIM),MATROT(DIM,DIM),MATTRIDIAG(DIM,DIM)
     REAL*8 :: ROTTRISUP(DIM,DIM), ID(DIM,DIM),MATTAMP(DIM,DIM)
-    REAL*8 :: CONV
+    REAL*8 :: RESIDUAL, VEC(DIM), MATRES(DIM,DIM),MATROTT(DIM,DIM)
     INTEGER COMPT, VALPROPRE, STAT, ERR, I, J
 
+    TEST = .FALSE.
     ERR = 97
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) CLOSE(ERR,STATUS = 'delete')
@@ -30,57 +31,49 @@ SUBROUTINE DIAGMATSYM(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
         ID(I,I) = 1.
     ENDDO
     ! --- STEP 1 : TRIDIAGONALIZATION OF THE MATRIX --- !
+    MATROT = ID
     IF (SYM) CALL TRIDIAG(DIM,MAT,MATTRIDIAG,MATROT)
+    CALL TRANSPOSE(DIM,MATROT,MATROTT)
+    CALL PRODMAT(DIM,MATROTT,MAT,MATRES)
+    CALL PRODMAT(DIM,MATRES,MATROT)
     ! --- STEP 2 : RQ ITERATION UNTIL CONVERGENCE --- !
     EIGENVEC = ID
     DO VALPROPRE = 1,DIM
-        CONV = 1 
+        RESIDUAL = 1 
         COMPT = 0
-        DO WHILE(CONV > EPS .AND. COMPT < MAXSTEP) 
+        DO WHILE(RESIDUAL > CONV .AND. COMPT < MAXSTEP) 
             CALL QRHOUSE(DIM,MATTRIDIAG,ROTTRISUP,TRISUP)
             CALL PRODMAT(DIM,TRISUP,ROTTRISUP,MATTRIDIAG)
             CALL PRODMAT(DIM,EIGENVEC,ROTTRISUP,EIGENVEC)
-            IF (COMPT > 0) CONV = ABS(EIGENVAL(VALPROPRE) - MATTRIDIAG(VALPROPRE,VALPROPRE))
             DO I = 1,DIM
                 EIGENVAL(I) = MATTRIDIAG(I,I)
             ENDDO
+            DO I = 1,DIM
+                VEC(I) = EIGENVEC(I,VALPROPRE)
+            ENDDO
+            CALL MATAPPLI(DIM,MATRES,VEC,VEC)
+            RESIDUAL = 0
+            DO I = 1,DIM
+                VEC(I) = VEC(I) - EIGENVAL(VALPROPRE)*EIGENVEC(I,VALPROPRE)
+                RESIDUAL = RESIDUAL + VEC(I)**2
+            ENDDO
+            RESIDUAL = SQRT(RESIDUAL)
             COMPT = COMPT + 1
-        ! --- VERIFICATION --- !
-            IF (SYM) THEN
-                TEST = .FALSE.
-                DO I = 1,DIM-2
-                    DO J = I+2,DIM
-                        IF (ABS(MATTRIDIAG(I,J)) > EPS .OR. ABS(MATTRIDIAG(J,I)) > EPS) TEST = .TRUE.
-                    ENDDO
-                ENDDO
-                DO I = 1,DIM - 1
-                    IF (ABS(MATTRIDIAG(I,I+1)-MATTRIDIAG(I+1,I)) > EPS0) TEST = .TRUE.
-                ENDDO
-                IF (TEST) THEN
-                    OPEN(UNIT = ERR, FILE = 'error')
-                    WRITE(ERR,'(A)')  'PROBLEM TRIDIAGONALISATION RQ ITERATIVE'
-                    DO I = 1,DIM
-                        WRITE(ERR,'(100F14.5)')(MATTRIDIAG(I,J),J=1,DIM)
-                    ENDDO
-                ENDIF
-            ENDIF
         ENDDO
+        IF (COMPT == MAXSTEP) THEN
+            TEST = .TRUE.
+            OPEN(UNIT = ERR, FILE = 'error')
+            WRITE(ERR,'(A,4X,E14.5)') 'EIGENVAL =',EIGENVAL(VALPROPRE)
+            WRITE(ERR,'(A,4X,100E14.5)') 'EIGENVECTOR =',(EIGENVEC(I,VALPROPRE),I=1,DIM)
+            WRITE(ERR,'(A,4X,I5,4X,A,E14.5)') 'MAX STEP REACHS =',MAXSTEP,'RESIDUAL =',CONV
+            WRITE(ERR,'(A)') '****************'
+        ENDIF
     ENDDO
     ! --- STEP 3 : PRODUCT WITH MATRIX ROTATION OF TRIDIAGONALE TRANFOR --- !
     IF (SYM) CALL PRODMAT(DIM,MATROT,EIGENVEC,EIGENVEC)
     ! --- STEP 4 : ORDERING EIGENVALS/EIGENVECTS --- !
     CALL ORDERING(DIM,EIGENVAL,EIGENVEC)
     ! --- VERIFICATION --- !
-    TEST = .FALSE.
-    IF (COMPT == MAXSTEP) THEN
-        TEST = .TRUE.
-        WRITE(ERR,'(A,4X,I5)') 'MAX STEP REACHS =',MAXSTEP
-    ENDIF
-    DO I = 1,DIM-1
-        DO J = I+1,DIM
-            IF (ABS(MATTRIDIAG(I,J)) > 100*EPS .OR. ABS(MATTRIDIAG(J,I)) > 100*EPS) TEST = .TRUE.
-        ENDDO
-    ENDDO
     MATTAMP = 0.
     DO I = 1,DIM
         MATTAMP(I,I) = EIGENVAL(I)
@@ -90,12 +83,12 @@ SUBROUTINE DIAGMATSYM(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
     CALL PRODMAT(DIM,MATTAMP,EIGENVEC,MATTAMP)
     DO I = 1,DIM
         DO J = 1,DIM
-            IF(ABS(MATTAMP(I,J)-MAT(I,J)) > 100*EPS) TEST = .TRUE.
+            IF(ABS(MATTAMP(I,J)-MAT(I,J)) > CONV) TEST = .TRUE.
         ENDDO
     ENDDO
     IF (TEST) THEN
         OPEN(UNIT = ERR, FILE = 'error')
-        WRITE(ERR,'(A,10X,A,4X,ES14.1)') 'PROBLEM DIAGONALISATION','EPS =',EPS
+        WRITE(ERR,'(A,10X,A,4X,ES14.1)') 'PROBLEM DIAGONALISATION','CRIT CONV =',CONV
         WRITE(ERR,'(A)') '***********************'
         WRITE(ERR,'(A)') 'DIAGONAL MATRIX OBTAINED'
         DO I = 1,DIM
