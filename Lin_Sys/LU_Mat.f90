@@ -70,8 +70,6 @@ SUBROUTINE LU_MAT(DIM,MATRIX,VEC,SOL)
         IF (ABS(VECTEST(I) - VEC(I)) > EPS0) TEST = .TRUE.
     ENDDO
     IF (TEST) THEN
-        WRITE(6,*) SOL
-        WRITE(6,*) VECTEST
         OPEN(UNIT = ERR,FILE = 'error')
         WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
         WRITE(ERR,'(A)') 'A = '

@@ -32,12 +32,14 @@ SUBROUTINE INVMATQR(DIM,MATRIX,INVMATRIX)
     ENDDO
     IF (TEST) THEN
         OPEN(UNIT = ERR,FILE = 'error')
+        WRITE(6,'(A)') 'NON INVERSIBLE MATRIX'
         WRITE(ERR,'(A)') 'NON INVERSIBLE MATRIX'
         WRITE(ERR,'(A)') 'R-MATRIX :'
         DO I = 1,DIM
             WRITE(ERR,'(100F14.5)') (R(I,J), J = 1,DIM)
         ENDDO
         WRITE(ERR,'(A)') '********************'
+        STOP
 
     ELSE
         RINV = 0.

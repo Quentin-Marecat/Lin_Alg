@@ -4,7 +4,7 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING QR DECOMPOS OF A --- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------ !
     ! --- RESIDUAL METHOD IS USED TO IMPROVE THE METHOD --------------------------------------------- !
-    ! --- operation_mat.f90 QRhouse.f90 AND housestep.f90 ARE NECESSARY ---------------------------------------------------- !
+    ! --- operation_mat.f90 QRhouse.f90 AND housestep.f90 ARE NECESSARY ----------------------------- !
     ! ----------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13
@@ -27,7 +27,7 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
     ! --- QR DECOMP SUBROUTINE FROM Quentin-Marecat PACKAGES IS USED, PLEASE FIND IT ON MY GITHUB PAGE --- !
 
     VEC2 = VEC
-    OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
+    OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 2) THEN
         COMPT = 0
         XNORME = 1
@@ -64,8 +64,6 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
         IF (ABS(VECTEST(I) - VEC(I)) > EPS0) TEST = .TRUE.
     ENDDO
     IF (TEST) THEN
-        WRITE(6,*) SOL
-        WRITE(6,*) VECTEST
         OPEN(UNIT = ERR,FILE = 'error')
         WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
         WRITE(ERR,'(A)') 'A = '
@@ -78,6 +76,9 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
         WRITE(ERR,'(A)') '************'
         WRITE(ERR,'(A)') 'b = '
         WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
+        WRITE(ERR,'(A)') '************'
+        WRITE(ERR,'(A)') 'ERROR = '
+        WRITE(ERR,'(100E14.4)') (VECTEST(I)-VEC(I), I = 1,DIM)
         WRITE(ERR,'(A)') '************'
     ENDIF
 
