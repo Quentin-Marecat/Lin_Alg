@@ -1,26 +1,28 @@
-SUBROUTINE DIAGMATSYM(DIME,MAT,EIGENVAL,EIGENVEC,SYM)
-    USE DIAGMATMOD
+SUBROUTINE DIAGMATSYM(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
-    ! ------------------------------------------------------------ !
-    ! --- THIS SUBROUTINE DIAGONALIZE THE SYMMETRIC MATRIX MAT --- !
-    ! --- USING RQ ITERATIVE ALGORITHME -------------------------- !
-    ! --- SYM = .TRUE. IF THE MATRIX IS SYMMETRIC ---------------- !
-    ! ------------------------------------------------------------ !
+    ! --------------------------------------------------------------------------------- !
+    ! --- THIS SUBROUTINE DIAGONALIZE THE MATRIX MAT ---------------------------------- !
+    ! --- USING RQ ITERATIVE ALGORITHME ----------------------------------------------- !
+    ! --- SYM = .TRUE. IF THE MATRIX IS SYMMETRIC ------------------------------------- !
+    ! --- operation_mat.f90 tridiag.f90 QRhouse.f90 and housestep.f90 ARE NECESSARY --- !
+    ! --------------------------------------------------------------------------------- !
     IMPLICIT NONE
+    REAL*8, PARAMETER :: EPS = 1.D-10, EPS0 = 1.D-12
+    INTEGER, PARAMETER :: MAXSTEP = 1D5
+    LOGICAL :: TEST
     LOGICAL,INTENT(IN) :: SYM
-    INTEGER, INTENT(IN) :: DIME
-    REAL*8, INTENT(IN) :: MAT(DIME,DIME)
-    REAL*8, INTENT(OUT) :: EIGENVEC(DIME,DIME), EIGENVAL(DIME)
-    REAL*8 :: TRISUP(DIME,DIME),MATROT(DIME,DIME),MATTRIDIAG(DIME,DIME)
-    REAL*8 :: ROTTRISUP(DIME,DIME), ID(DIME,DIME),MATTAMP(DIME,DIME)
-    REAL*8 :: EIGENVECT(DIME,DIME)
+    INTEGER, INTENT(IN) :: DIM
+    REAL*8, INTENT(IN) :: MAT(DIM,DIM)
+    REAL*8, INTENT(OUT) :: EIGENVEC(DIM,DIM), EIGENVAL(DIM)
+    REAL*8 :: TRISUP(DIM,DIM),MATROT(DIM,DIM),MATTRIDIAG(DIM,DIM)
+    REAL*8 :: ROTTRISUP(DIM,DIM), ID(DIM,DIM),MATTAMP(DIM,DIM)
     REAL*8 :: CONV
-    INTEGER COMPT, VALPROPRE, STAT
+    INTEGER COMPT, VALPROPRE, STAT, ERR, I, J
 
+    ERR = 97
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) CLOSE(ERR,STATUS = 'delete')
 
-    DIM = DIME
     TRISUP = MAT
     MATTRIDIAG = MAT
     ID = 0.
@@ -28,14 +30,14 @@ SUBROUTINE DIAGMATSYM(DIME,MAT,EIGENVAL,EIGENVEC,SYM)
         ID(I,I) = 1.
     ENDDO
     ! --- STEP 1 : TRIDIAGONALIZATION OF THE MATRIX --- !
-    IF (SYM) CALL TRIDIAG(MAT,MATTRIDIAG,MATROT)
+    IF (SYM) CALL TRIDIAG(DIM,MAT,MATTRIDIAG,MATROT)
     ! --- STEP 2 : RQ ITERATION UNTIL CONVERGENCE --- !
     EIGENVEC = ID
     DO VALPROPRE = 1,DIM
-        CONV = 1
+        CONV = 1 
         COMPT = 0
         DO WHILE(CONV > EPS .AND. COMPT < MAXSTEP) 
-            CALL HOUSEHOLDER(MATTRIDIAG,TRISUP,ROTTRISUP)
+            CALL QRHOUSE(DIM,MATTRIDIAG,ROTTRISUP,TRISUP)
             CALL PRODMAT(DIM,TRISUP,ROTTRISUP,MATTRIDIAG)
             CALL PRODMAT(DIM,EIGENVEC,ROTTRISUP,EIGENVEC)
             IF (COMPT > 0) CONV = ABS(EIGENVAL(VALPROPRE) - MATTRIDIAG(VALPROPRE,VALPROPRE))
@@ -44,34 +46,39 @@ SUBROUTINE DIAGMATSYM(DIME,MAT,EIGENVAL,EIGENVEC,SYM)
             ENDDO
             COMPT = COMPT + 1
         ! --- VERIFICATION --- !
-            TESTLOG = .FALSE.
-            DO I = 1,DIM-2
-                DO J = I+2,DIM
-                    IF (ABS(MATTRIDIAG(I,J)) > EPS .OR. ABS(MATTRIDIAG(J,I)) > EPS) TESTLOG = .TRUE.
+            IF (SYM) THEN
+                TEST = .FALSE.
+                DO I = 1,DIM-2
+                    DO J = I+2,DIM
+                        IF (ABS(MATTRIDIAG(I,J)) > EPS .OR. ABS(MATTRIDIAG(J,I)) > EPS) TEST = .TRUE.
+                    ENDDO
                 ENDDO
-            ENDDO
-            DO I = 1,DIM - 1
-                IF (ABS(MATTRIDIAG(I,I+1)-MATTRIDIAG(I+1,I)) > EPS0) TESTLOG = .TRUE.
-            ENDDO
-            IF (TESTLOG .AND. SYM) THEN
-                OPEN(UNIT = ERR, FILE = 'error')
-                WRITE(ERR,'(A)')  'PROBLEM TRIDIAGONALISATION RQ ITERATIVE'
-                DO I = 1,DIM
-                    WRITE(ERR,*)(MATTRIDIAG(I,J),J=1,DIM)
+                DO I = 1,DIM - 1
+                    IF (ABS(MATTRIDIAG(I,I+1)-MATTRIDIAG(I+1,I)) > EPS0) TEST = .TRUE.
                 ENDDO
+                IF (TEST) THEN
+                    OPEN(UNIT = ERR, FILE = 'error')
+                    WRITE(ERR,'(A)')  'PROBLEM TRIDIAGONALISATION RQ ITERATIVE'
+                    DO I = 1,DIM
+                        WRITE(ERR,'(100F14.5)')(MATTRIDIAG(I,J),J=1,DIM)
+                    ENDDO
+                ENDIF
             ENDIF
         ENDDO
     ENDDO
     ! --- STEP 3 : PRODUCT WITH MATRIX ROTATION OF TRIDIAGONALE TRANFOR --- !
     IF (SYM) CALL PRODMAT(DIM,MATROT,EIGENVEC,EIGENVEC)
     ! --- STEP 4 : ORDERING EIGENVALS/EIGENVECTS --- !
-    CALL ORDERING(EIGENVAL,EIGENVEC)
+    CALL ORDERING(DIM,EIGENVAL,EIGENVEC)
     ! --- VERIFICATION --- !
-    TESTLOG = .FALSE.
-    IF (COMPT == MAXSTEP) TESTLOG = .TRUE.
+    TEST = .FALSE.
+    IF (COMPT == MAXSTEP) THEN
+        TEST = .TRUE.
+        WRITE(ERR,'(A,4X,I5)') 'MAX STEP REACHS =',MAXSTEP
+    ENDIF
     DO I = 1,DIM-1
         DO J = I+1,DIM
-            IF (ABS(MATTRIDIAG(I,J)) > 100*EPS .OR. ABS(MATTRIDIAG(J,I)) > 100*EPS) TESTLOG = .TRUE.
+            IF (ABS(MATTRIDIAG(I,J)) > 100*EPS .OR. ABS(MATTRIDIAG(J,I)) > 100*EPS) TEST = .TRUE.
         ENDDO
     ENDDO
     MATTAMP = 0.
@@ -79,14 +86,14 @@ SUBROUTINE DIAGMATSYM(DIME,MAT,EIGENVAL,EIGENVEC,SYM)
         MATTAMP(I,I) = EIGENVAL(I)
     ENDDO
     CALL PRODMAT(DIM,EIGENVEC,MATTAMP,MATTAMP)
-    CALL TRANSPOSE(DIM,EIGENVEC,EIGENVECT)
-    CALL PRODMAT(DIM,MATTAMP,EIGENVECT,MATTAMP)
+    CALL TRANSPOSE(DIM,EIGENVEC,EIGENVEC)
+    CALL PRODMAT(DIM,MATTAMP,EIGENVEC,MATTAMP)
     DO I = 1,DIM
         DO J = 1,DIM
-            IF(ABS(MATTAMP(I,J)-MAT(I,J)) > 100*EPS) TESTLOG = .TRUE.
+            IF(ABS(MATTAMP(I,J)-MAT(I,J)) > 100*EPS) TEST = .TRUE.
         ENDDO
     ENDDO
-    IF (TESTLOG) THEN
+    IF (TEST) THEN
         OPEN(UNIT = ERR, FILE = 'error')
         WRITE(ERR,'(A,10X,A,4X,ES14.1)') 'PROBLEM DIAGONALISATION','EPS =',EPS
         WRITE(ERR,'(A)') '***********************'
@@ -103,7 +110,7 @@ SUBROUTINE DIAGMATSYM(DIME,MAT,EIGENVAL,EIGENVEC,SYM)
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
-    IF (STAT == 0) WRITE(6,'(A)') 'ERROR, SEE FILE error'
+    IF (STAT == 0) WRITE(6,'(A)') 'ERROR DIAGONALIZATION, SEE FILE error'
 
 END SUBROUTINE
 
@@ -119,14 +126,15 @@ END SUBROUTINE
 
 
 
-SUBROUTINE ORDERING(EIGENVAL,EIGENVECT)
-    USE DIAGMATMOD
+SUBROUTINE ORDERING(DIM,EIGENVAL,EIGENVECT)
     ! -------------------------------------------------------------- !
     ! --- THIS SUBROUTINE ORDER THE EIGENVALUES AND EIGENVECTORS --- !
     ! -------------------------------------------------------------- !
+    INTEGER :: DIM
     REAL*8 :: EIGENVAL(DIM),EIGENVECT(DIM,DIM)
     REAL*8 :: EIGENVALTAMP(DIM),EIGENVECTTAMP(DIM,DIM), MINI
     INTEGER :: ORD(DIM)
+    INTEGER :: I,J
     EIGENVALTAMP = EIGENVAL
     EIGENVECTTAMP = EIGENVECT
     DO I = 1,DIM-1
