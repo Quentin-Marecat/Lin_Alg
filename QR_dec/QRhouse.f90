@@ -66,7 +66,6 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
         ENDDO 
         WRITE(ERR,'(A)') '*************'
     ENDIF
-    CLOSE(ERR)
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) WRITE(6,'(A)') 'ERROR, SEE FILE error'

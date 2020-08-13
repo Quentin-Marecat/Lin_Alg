@@ -43,7 +43,6 @@ SUBROUTINE QRGRAM(DIM,MATRIX,Q,R)
             WRITE(ERR,'(100F14.5)') (R(I,J), J = 1,DIM)
         ENDDO 
         WRITE(ERR,'(A)') '*************'
-        CLOSE(ERR)
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')

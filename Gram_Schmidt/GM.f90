@@ -50,7 +50,7 @@ SUBROUTINE GM(DIM,MATRIX,ORTHOMATRIX)
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
-    IF (STAT == 0) WRITE(6,'(A)') 'ERROR, SEE FILE error'
+    IF (STAT == 0) WRITE(6,'(A)') 'ERROR Gram-Schmidt, SEE FILE error'
 
 END SUBROUTINE
     

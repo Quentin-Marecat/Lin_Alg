@@ -7,7 +7,7 @@ NO MAKEFILE IS USED
 
 (BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
-gfortran -c diagmatmod.f90 && gfortran '-fflags' -o 'name_exe'.x *.f90 && ./'name_exe'.x
+gfortran -c diagmatmod.f90 && gfortran '-fflags' -o 'name_exe'.x *.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
 ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT

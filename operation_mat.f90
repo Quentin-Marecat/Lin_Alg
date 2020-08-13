@@ -47,6 +47,32 @@ END SUBROUTINE
 
 
 
+SUBROUTINE TRANSPOSE(DIM,M1,MT1)
+  ! -------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE TRANSPOSE THE M1 MATRIX AND RETURN MT1 --- !
+  ! --- M1 CAN BE THE SAME AS MT1 -------------------------------- !
+  ! -------------------------------------------------------------- !
+  IMPLICIT NONE 
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8, INTENT(IN) :: M1(DIM,DIM)
+  REAL*8, INTENT(OUT) :: MT1(DIM,DIM)
+  REAL*8 :: MATTAMP(DIM,DIM)
+  INTEGER :: LINE, COLUMN
+  MATTAMP = M1
+  MT1 = 0.
+  DO LINE = 1,DIM
+      DO COLUMN = 1,DIM
+          MT1(LINE,COLUMN) = MATTAMP(COLUMN,LINE)
+      ENDDO
+  ENDDO
+END SUBROUTINE
+
+
+
+
+
+
+
 SUBROUTINE NORMVEC(DIM,VEC,NOR)
   ! ----------------------------------------------------------- !
   ! --- THIS SUBROUTINE COMPUTE THE NORME OF THE VECTOR VEC --- !

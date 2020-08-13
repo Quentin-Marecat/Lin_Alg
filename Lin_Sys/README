@@ -4,14 +4,19 @@ THE AIM OF THIS PACKAGE IS NOT TO BE EFFICIENT
 BUT MUST BE USED IN A PEDAGOGICAL WAY
 
 NO MAKEFILE IS USED
+operation_mat.f90 IS NECESSARY
+
 
 (BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
+
 INVERSE METHOD :
-gfortran '-fflags' -o 'name_exe'.x *.f90 'path_inverse_sub'*.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x *.f90 'path_inverse_sub'*.f90'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 LU METHOD
 gfortran '-fflags' -o 'name_exe'.x *.f90 'path_LU_sub'*.f90 && ./'name_exe'.x
+
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
+
 
 ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT
 
