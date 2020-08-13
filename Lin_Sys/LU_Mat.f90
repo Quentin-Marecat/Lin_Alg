@@ -1,16 +1,20 @@
 SUBROUTINE LU_MAT(DIM,MATRIX,VEC,SOL)
+    ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ----------------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING LU DECOMPOS OF A --- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------ !
+    ! --- RESIDUAL METHOD IS USED TO IMPROVE THE METHOD --------------------------------------------- !
     ! ----------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
-    REAL*8, PARAMETER :: EPS0 = 1.D-14
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13
+    INTEGER, PARAMETER :: MAXSTEP = 1D5
     INTEGER, INTENT(IN) :: DIM
-    REAL*8, INTENT(IN) :: MATRIX(DIM,DIM),VEC(DIM)
+    REAL*8, INTENT(IN) :: MATRIX(DIM,DIM), VEC(DIM)
     REAL*8, INTENT(OUT) :: SOL(DIM)
-    REAL*8 :: L(DIM,DIM),U(DIM,DIM), VECTEST(DIM), SOLINT(DIM)
+    REAL*8 :: L(DIM,DIM),U(DIM,DIM), VECTEST(DIM), SOLINT(DIM), VEC2(DIM)
+    REAL*8 :: SOL2(DIM), VECTAMP(DIM), XNORME
     LOGICAL :: TEST
-    INTEGER :: I, J, ERR, STAT
+    INTEGER :: I, J, ERR, STAT, COMPT
 
     ERR = 97
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
@@ -20,26 +24,39 @@ SUBROUTINE LU_MAT(DIM,MATRIX,VEC,SOL)
     CALL LU(DIM,MATRIX,L,U)
     ! --- LU DECOMP SUBROUTINE FROM Quentin-Marecat PACKAGES IS USED, PLEASE FIND IT ON MY GITHUB PAGE --- !
 
+    VEC2 = VEC
     OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 2) THEN
-        SOLINT(1) = VEC(1)/L(1,1)
-        DO I = 2,DIM
-            SOLINT(I) = VEC(I)
-            DO J = 1,I-1
-                SOLINT(I) = SOLINT(I) - SOLINT(J)*L(I,J)
+        COMPT = 0
+        XNORME = 1
+        SOL2 = 0
+        DO WHILE(XNORME > CONV .AND. COMPT < MAXSTEP) 
+            SOLINT(1) = VEC2(1)/L(1,1)
+            DO I = 2,DIM
+                SOLINT(I) = VEC2(I)
+                DO J = 1,I-1
+                    SOLINT(I) = SOLINT(I) - SOLINT(J)*L(I,J)
+                ENDDO
+                SOLINT(I) = SOLINT(I)/L(I,I)
             ENDDO
-            SOLINT(I) = SOLINT(I)/L(I,I)
-        ENDDO
-        SOL(DIM) = SOLINT(DIM)/U(DIM,DIM)
-        DO I = DIM-1,1,-1
-            SOL(I) = SOLINT(I)
-            DO J = DIM,I+1,-1
-                SOL(I) = SOL(I) - SOL(J)*U(I,J)
+            SOL(DIM) = SOLINT(DIM)/U(DIM,DIM)
+            DO I = DIM-1,1,-1
+                SOL(I) = SOLINT(I)
+                DO J = DIM,I+1,-1
+                    SOL(I) = SOL(I) - SOL(J)*U(I,J)
+                ENDDO
+                SOL(I) = SOL(I)/U(I,I)
             ENDDO
-            SOL(I) = SOL(I)/U(I,I)
+            COMPT = COMPT + 1
+            CALL NORMVEC(DIM,SOL,XNORME)
+            CALL MATAPPLI(DIM,MATRIX,SOL,VECTAMP)
+            DO I = 1,DIM
+                SOL2(I) = SOL2(I) + SOL(I)
+                VEC2(I) = VEC2(I) - VECTAMP(I) 
+            ENDDO
         ENDDO
     ENDIF
-
+    SOL = SOL2
     ! --- VERIFICATION --- !
     CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
     TEST = .FALSE.
