@@ -14,7 +14,7 @@ Here is the list of all packages of the depository :
 Next step :
 * SVD factorization
 * Lanczos + Davidson diagonalization
-* Gauss-Seidel inversion
+* Jacobi diagonalization
 * Eigenvectors using inverse iterations
 
 All rights are strictly reserved to Quentin Marecat
