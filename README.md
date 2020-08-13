@@ -1,8 +1,8 @@
-# LINEAR ALGEBRA PASCKAGES IN FORTRAN
+# LINEAR ALGEBRA PACKAGES IN FORTRAN
 
 The aim of these packages is not to be efficient, but to be applied in a **pedagogical way**
 
-Here is the list of all packaging of the depository :
+Here is the list of all packages of the depository :
 * Cholesky decomposition
 * QR decomposition
 * LU decomposition
