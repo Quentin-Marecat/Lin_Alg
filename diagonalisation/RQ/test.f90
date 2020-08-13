@@ -25,7 +25,8 @@ PROGRAM TEST
         READ(IN,*) (M1(I,J),J=1,DIM)
     ENDDO
     CLOSE(IN)
-    CALL DIAGMATSYM(DIM,M1,EV,EF,.TRUE.)
+!    CALL RQ_DIAG(DIM,M1,EV,EF,.TRUE.)
+    CALL RQ_SHIFT_DIAG(DIM,M1,EV,EF,.TRUE.)
     WRITE(OUT,'(A)') '***********************'
     WRITE(OUT,'(A)') 'EIGENVALUES :'
     WRITE(OUT,'(100F14.5)') EV

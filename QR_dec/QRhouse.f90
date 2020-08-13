@@ -5,7 +5,7 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
     ! --- HOUSEMAT AND MAT CAN BE THE SAME BUT MAT WILL BE ERASED -------------- !
     ! -------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-14
+    REAL*8, PARAMETER :: EPS0 = 1.D-11
     LOGICAL :: TESTLOG
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)

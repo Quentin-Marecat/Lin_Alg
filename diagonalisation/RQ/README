@@ -7,6 +7,7 @@ NO MAKEFILE IS USED
 
 (BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
+RQ ITERATION/ RQ + SHIFT ITERATION
 gfortran '-fflags' -o 'name_exe'.x *.f90 'path_ope_mat_sub'operation_mat.f90 'path_QRhouse_sub'QRhouse.f90 'path_tridiag_sub'*.f90 && ./'name_exe'.x
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
