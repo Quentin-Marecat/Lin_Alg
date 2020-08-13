@@ -1,7 +1,7 @@
 PROGRAM TEST
     IMPLICIT NONE
     REAL*8,ALLOCATABLE :: M(:,:), ORTHOM(:,:)
-    INTEGER :: DIM,I,J
+    INTEGER :: DIM,I,J, STAT
     OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
     OPEN(UNIT = 98,FILE = 'output')
     READ(99,*) DIM
@@ -16,4 +16,6 @@ PROGRAM TEST
         WRITE(98,*) (ORTHOM(I,J),J = 1,DIM)
     ENDDO
     WRITE(98,*) '*******************'
+    OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
+    IF (STAT == 2) WRITE(6,'(A)') 'RUN SUCCESFULLY, SEE output FILE' 
 END

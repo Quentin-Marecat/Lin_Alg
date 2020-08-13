@@ -3,7 +3,7 @@ PROGRAM TEST
     IMPLICIT NONE
     REAL*8,ALLOCATABLE :: M1(:,:),M2(:,:),M3(:,:),MATROT(:,:)
     REAL*8, ALLOCATABLE :: EV(:),EF(:,:),ARRAY(:)
-    INTEGER :: DIM
+    INTEGER :: DIM, STAT
     INTEGER :: I,J,IN, OUT
     
     IN =99
@@ -35,4 +35,7 @@ PROGRAM TEST
         WRITE(OUT,'(100F14.5)') (EF(J,I),I=1,DIM)
     ENDDO
     WRITE(OUT,'(A)') '***********************'
+
+    OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
+    IF (STAT == 2) WRITE(6,'(A)') 'RUN SUCCESFULLY, SEE output FILE' 
 END
