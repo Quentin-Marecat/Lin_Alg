@@ -20,7 +20,8 @@ SUBROUTINE INV_MAT(DIM,MATRIX,VEC,SOL)
     ! ---------------------------------------------------------------------------------------------------- !
     CALL INVMATQR(DIM,MATRIX,INVMATRIX)
     ! --- INVERSION SUBROUTINE FROM Quentin-Marecat PACKAGES IS USED, PLEASE FIND IT ON MY GITHUB PAGE --- !
-    CALL MATAPPLI(DIM,INVMATRIX,VEC,SOL)
+    OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
+    IF (STAT == 2) THEN CALL MATAPPLI(DIM,INVMATRIX,VEC,SOL)
 
     ! --- VERIFICATION --- !
     CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
