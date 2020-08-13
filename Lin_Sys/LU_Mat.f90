@@ -4,6 +4,7 @@ SUBROUTINE LU_MAT(DIM,MATRIX,VEC,SOL)
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING LU DECOMPOS OF A --- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------ !
     ! --- RESIDUAL METHOD IS USED TO IMPROVE THE METHOD --------------------------------------------- !
+    ! --- operation_mat.f90 LU.f90 ARE NECESSARY ---------------------------------------------------- !
     ! ----------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13

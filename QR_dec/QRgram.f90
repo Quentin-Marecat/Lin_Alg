@@ -1,7 +1,9 @@
 SUBROUTINE QRGRAM(DIM,MATRIX,Q,R)
+    ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! --------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE GENERATE QR DECOMPOSITION USING GRAM_SCHMIDT SCHEME --- !
     ! --- HOUSEMAT AND MAT CAN BE THE SAME BUT MAT WILL BE ERASED --------------- !
+    ! --- operation_mat.f90 AND GM.f90 ARE NECESSARY ---------------------------- !
     ! --------------------------------------------------------------------------- !
     IMPLICIT NONE
     REAL*8, PARAMETER :: EPS0 = 1.D-14
@@ -46,6 +48,6 @@ SUBROUTINE QRGRAM(DIM,MATRIX,Q,R)
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
-    IF (STAT == 0) WRITE(6,'(A)') 'ERROR, SEE FILE error'
+    IF (STAT == 0) WRITE(6,'(A)') 'ERROR QR GRAM-SCHMIDT, SEE FILE error'
 END SUBROUTINE
                         

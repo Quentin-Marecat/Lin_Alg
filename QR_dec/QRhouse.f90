@@ -1,4 +1,5 @@
 SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
+    ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! -------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE GENERATE QR DECOMPOSITION USING HOUSEHOLDER SCHEME --- !
     ! --- HOUSEMAT AND MAT CAN BE THE SAME BUT MAT WILL BE ERASED -------------- !
@@ -68,6 +69,6 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
-    IF (STAT == 0) WRITE(6,'(A)') 'ERROR, SEE FILE error'
+    IF (STAT == 0) WRITE(6,'(A)') 'ERROR QR HOUSEHOLDER, SEE FILE error'
 END SUBROUTINE
 

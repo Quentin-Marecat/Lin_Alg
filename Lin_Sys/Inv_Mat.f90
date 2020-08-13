@@ -1,4 +1,5 @@
 SUBROUTINE INV_MAT(DIM,MATRIX,VEC,SOL)
+! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ----------------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING THE INVERSE OF A --- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------ !

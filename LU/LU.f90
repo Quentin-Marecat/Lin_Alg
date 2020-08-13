@@ -1,4 +1,5 @@
 SUBROUTINE LU(DIM,MATRIX,L,U)
+    ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ------------------------------------------------------------- !
     ! --- THIS ALGORITHME DO THE LU FACTORIZATION OF THE MATRIX --- !
     ! ------------------------------------------------------------- !
