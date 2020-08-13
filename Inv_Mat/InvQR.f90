@@ -1,9 +1,9 @@
 SUBROUTINE INVMATQR(DIM,MATRIX,INVMATRIX)
-    ! --------------------------------------------------------------------------------------- !
-    ! --- THIS SUBROUTINE INVERSE THE MATRIX USING QR HOUSEHOLDER FACTORIZATION ------------- !
-    ! --- housestep.f90 AND QRhouse.f90 ARE USEFULL FOR THIS ALGORTIHME AND MUS BE COMPIL --- !
-    ! --- THEY CAN BE FOUND ON Quentin-Marecat GITHUB PAGE ---------------------------------- !
-    ! --------------------------------------------------------------------------------------- !
+    ! ------------------------------------------------------------------------------------------------------------- !
+    ! --- THIS SUBROUTINE INVERSE THE MATRIX USING QR HOUSEHOLDER FACTORIZATION ----------------------------------- !
+    ! --- housestep.f90 AND QRhouse.f90 AND operation_mat.f90 ARE USEFULL FOR THIS ALGORTIHME AND MUS BE COMPIL --- !
+    ! --- THEY CAN BE FOUND ON Quentin-Marecat GITHUB PAGE -------------------------------------------------------- !
+    ! ------------------------------------------------------------------------------------------------------------- !
     IMPLICIT NONE
     INTEGER :: DIM
     LOGICAL :: TEST

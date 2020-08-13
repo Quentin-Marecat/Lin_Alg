@@ -47,10 +47,20 @@ SUBROUTINE LU_MAT(DIM,MATRIX,VEC,SOL)
         IF (ABS(VECTEST(I) - VEC(I)) > EPS0) TEST = .TRUE.
     ENDDO
     IF (TEST) THEN
+        WRITE(6,*) SOL
+        WRITE(6,*) VECTEST
         OPEN(UNIT = ERR,FILE = 'error')
         WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
+        WRITE(ERR,'(A)') 'A = '
+        DO I = 1,DIM
+            WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
+        ENDDO
+        WRITE(ERR,'(A)') '************'
         WRITE(ERR,'(A)') 'x = '
         WRITE(ERR,'(100F14.5)') (SOL(I), I = 1,DIM)
+        WRITE(ERR,'(A)') '************'
+        WRITE(ERR,'(A)') 'b = '
+        WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
         WRITE(ERR,'(A)') '************'
     ENDIF
 

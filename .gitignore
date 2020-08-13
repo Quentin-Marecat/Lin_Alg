@@ -1,3 +1,6 @@
+*.x
+error
+output
 diagonalisation/Lapack
 diagonalisation/Lapack_red
 LIVRE.pdf

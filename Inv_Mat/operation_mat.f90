@@ -36,6 +36,7 @@ SUBROUTINE MATAPPLI(DIM,ENDO,V0,V1)
   REAL*8 :: VTAMP(DIM)
   INTEGER :: I, J
   VTAMP = V0
+  V1 = 0
   DO I = 1,DIM
       DO J = 1,DIM
           V1(I) = V1(I) + ENDO(I,J)*VTAMP(J)

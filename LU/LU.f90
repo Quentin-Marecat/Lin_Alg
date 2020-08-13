@@ -86,7 +86,6 @@ SUBROUTINE LU(DIM,MATRIX,L,U)
         DO I = 1,DIM
             WRITE(ERR,'(100F14.5)') (U(I,J),J = 1,DIM)
         ENDDO
-        CLOSE(ERR)
     ENDIF
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) WRITE(6,'(A)') 'ERROR LU DECOMPO, SEE FILE error'
