@@ -4,7 +4,7 @@ SUBROUTINE GAUSS_SEIDEL(DIM,MATRIX,VEC,SOL)
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING JACOBI ITERATIVE METHOD --- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------------- !
     ! --- RESIDUAL METHOD IS USED TO IMPROVE THE METHOD ---------------------------------------------------- !
-    ! --- operation_mat.f90 ARE NECESSARY ----------------------------- !
+    ! --- operation_mat.f90 InvQR.f90 QRhouse.f90 AND housestep.f90 ARE NECESSARY ----------------------------- !
     ! --- EXTREMELY BAD AND OUTDATED METHOD, OFTEN WORKS WHEN MATRIX IS DIAGONAL DOMINANT ------------------ !
     ! ------------------------------------------------------------------------------------------------------ !
     IMPLICIT NONE
