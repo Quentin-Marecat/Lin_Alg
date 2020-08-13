@@ -5,11 +5,20 @@ BUT MUST BE USED IN A PEDAGOGICAL WAY
 
 NO MAKEFILE IS USED
 
+
+
 (BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
-gfortran -c invmatmod.f90 && gfortran '-fflags' -o 'name_exe'.x test.f90 InvQR.f90 'path_QRHouseholder_sub'/*.f90 && ./'name_exe'.x
+
+QR INVERSION
+gfortran '-fflags' -o 'name_exe'.x test.f90 InvQR.f90 'path_QRHouseholder_sub'/*.f90 && ./'name_exe'.x
+
+LU INVERSION
+gfortran '-fflags' -o 'name_exe'.x test.f90 InvLU.f90 'path_LU_sub'/*.f90 'path_Lin_Sys_sub'/LU_Mat.f90 && ./'name_exe'.x
+
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
-ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT
 
+
+ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT
 FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr
