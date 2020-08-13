@@ -8,7 +8,7 @@ Here is the list of all packaging of the depository :
 * LU decomposition
 * Gram-Schmidt orthonormalization
 * Matrice inversion
-* RQ process diagonalization
+* RQ process diagonalization + shift method
 * A.**x** = **b** solution with residual improvement
 
 Next step :
