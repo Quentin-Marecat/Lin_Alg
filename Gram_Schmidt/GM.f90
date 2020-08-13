@@ -1,6 +1,8 @@
 SUBROUTINE GM(DIM,MATRIX,ORTHOMATRIX)
+    ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ------------------------------------------------------------------------ !
     ! --- THIS SUBROUTINE ORTHOGONALIZE A MATRIX USING GRAM-SCHMIDT SCHEME --- !
+    ! --- operation_mat.f90 is necessary ------------------------------------- !
     ! ------------------------------------------------------------------------ !
     IMPLICIT NONE 
     INTEGER, INTENT(IN) :: DIM
