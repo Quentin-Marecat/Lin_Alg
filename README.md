@@ -9,12 +9,12 @@ Here is the list of all packages of the depository :
 * Gram-Schmidt orthonormalization
 * Matrice inversion
 * RQ process diagonalization + shift method
+* Jacobi diagonalization
 * A.**x** = **b** solution with residual improvement
 
 Next step :
 * SVD factorization
 * Lanczos + Davidson diagonalization
-* Jacobi diagonalization
 * Eigenvectors using inverse iterations
 
 All rights are strictly reserved to Quentin Marecat
