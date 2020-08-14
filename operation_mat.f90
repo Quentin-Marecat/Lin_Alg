@@ -129,3 +129,60 @@ SUBROUTINE PRODVEC(DIM,MAT1,MAT2,POS1,POS2,PROD)
   ENDDO
 
 END SUBROUTINE
+
+
+
+
+SUBROUTINE ORDERING(DIM,EIGENVAL,EIGENVECT)
+  ! -------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE ORDER THE EIGENVALUES AND EIGENVECTORS --- !
+  ! -------------------------------------------------------------- !
+  INTEGER :: DIM
+  REAL*8 :: EIGENVAL(DIM),EIGENVECT(DIM,DIM)
+  REAL*8 :: EIGENVALTAMP(DIM),EIGENVECTTAMP(DIM,DIM), MINI
+  INTEGER :: ORD(DIM)
+  INTEGER :: I,J
+  EIGENVALTAMP = EIGENVAL
+  EIGENVECTTAMP = EIGENVECT
+  DO I = 1,DIM-1
+      ORD(I) = I
+      MINI = EIGENVALTAMP(I)
+      DO J = I+1,DIM
+          IF (EIGENVALTAMP(J) < MINI) THEN
+              ORD(I) = J
+              MINI = EIGENVALTAMP(J)
+          ENDIF
+      ENDDO
+      EIGENVALTAMP(I) = MINI
+      EIGENVALTAMP(ORD(I)) = EIGENVAL(I)
+      DO J = 1,DIM
+          EIGENVECTTAMP(J,I) = EIGENVECT(J,ORD(I))
+          EIGENVECTTAMP(J,ORD(I)) = EIGENVECT(J,I)
+      ENDDO
+      EIGENVAL = EIGENVALTAMP
+      EIGENVECT = EIGENVECTTAMP
+  ENDDO
+  RETURN
+END SUBROUTINE
+
+
+
+
+SUBROUTINE NORME_FROEB(DIM,MATRIX,NORME)
+  ! --------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE FROEBIUS NORM OF THE MATRIX --- !
+  ! --------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
+  REAL*8, INTENT(OUT) :: NORME
+  INTEGER :: I,J
+
+  NORME = 0
+  DO I = 1,DIM
+    DO J = 1,DIM
+      NORME = NORME + MATRIX(J,I)**2
+    ENDDO
+  ENDDO
+  NORME = SQRT(NORME)
+END SUBROUTINE
