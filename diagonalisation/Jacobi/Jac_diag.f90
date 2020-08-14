@@ -45,14 +45,9 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC)
                     ENDIF
                     S = SIN(THETA)
                     C = COS(THETA)
-!                    THETA = (JAC(I,I) - JAC(J,J))/(JAC(J,I))
-!                    T = SIGN(DBLE(1),THETA)/(ABS(THETA) + SQRT(THETA**2 + 1))
-!                    C = 1/(SQRT(T**2 + 1))
                     TAMP = JAC(I,I)
                     JAC(I,I) = (S**2)*JAC(J,J) + 2*S*C*JAC(J,I) + (C**2)*JAC(I,I)
                     JAC(J,J) = (C**2)*JAC(J,J) - 2*S*C*JAC(J,I) + (S**2)*TAMP
-!                    JAC(I,I) = JAC(I,I) - T*JAC(J,I)
-!                    JAC(J,J) = JAC(J,J) + T*JAC(J,I)
                     DO K = 1,DIM
                         IF (K /= J .AND. K /= I) THEN
                             TAMP = JAC(K,J)
