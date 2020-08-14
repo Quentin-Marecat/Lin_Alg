@@ -8,7 +8,7 @@ SUBROUTINE RQ_shift_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,SYM)
     ! --- operation_mat.f90 tridiag.f90 QRhouse.f90 and housestep.f90 ARE NECESSARY --- !
     ! --------------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: CONV = 1.D-10, EPS0 = 1.D-14
+    REAL*8, PARAMETER :: CONV = 1.D-12, EPS0 = 1.D-14
     INTEGER, PARAMETER :: MAXSTEP = 1D3
     LOGICAL :: TEST
     LOGICAL,INTENT(IN) :: SYM

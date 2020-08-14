@@ -5,7 +5,7 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC)
     ! --- tridiag.f90 housestep.f90 AND operation_mat.f90 ARE NECESSARY ---------- !
     ! ---------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-14, CONV = 1.D-10, MAXSWEEP = 100, PI = 3.14159265359
+    REAL*8, PARAMETER :: EPS0 = 1.D-14, CONV = 1.D-12, MAXSWEEP = 100, PI = 3.14159265359
     LOGICAL :: TEST
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
@@ -84,6 +84,7 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC)
     DO I = 1,DIM
         EIGENVAL(I) = JAC(I,I)
     ENDDO
+    WRITE(6,*) COMPT
 
     CALL ORDERING(DIM,EIGENVAL,EIGENVEC)
 

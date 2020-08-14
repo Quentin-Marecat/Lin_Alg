@@ -45,7 +45,7 @@ SUBROUTINE TRIDIAG(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
             OPEN(UNIT = ERR, FILE = 'error')
             WRITE(ERR,'(A)')  'PROBLEM HOUSESTEP'
             DO I = 1,DIM
-                WRITE(ERR,'(100F14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
+                WRITE(ERR,'(100E14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
             ENDDO
             WRITE(ERR,'(A)')  '****************'
         ENDIF
@@ -72,12 +72,12 @@ SUBROUTINE TRIDIAG(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
         WRITE(ERR,'(A)')  'PROBLEM TRIDIAGONALISATION'
         WRITE(ERR,'(A)') 'TRIDIAGONAL MATRIX OBTAINED'
         DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
+            WRITE(ERR,'(100E14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
         ENDDO
         WRITE(ERR,'(A)')  '****************'
         WRITE(ERR,'(A)') ' DIFFERENCE'
         DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
+            WRITE(ERR,'(100E14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
         ENDDO
         WRITE(ERR,'(A)')  '****************'
     ENDIF
