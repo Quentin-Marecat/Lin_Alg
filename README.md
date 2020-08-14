@@ -4,7 +4,7 @@ The aim of these packages is not to be efficient, but to be applied in a **pedag
 
 Here is the list of all packages of the depository :
 * Cholesky decomposition
-* QR decomposition
+* QR decomposition Householder + GS + Givens
 * LU decomposition
 * Gram-Schmidt orthonormalization
 * Matrice inversion
