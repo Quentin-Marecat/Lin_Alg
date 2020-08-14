@@ -5,8 +5,8 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
     ! --- HOUSEMAT AND MAT CAN BE THE SAME BUT MAT WILL BE ERASED -------------- !
     ! -------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-11
-    LOGICAL :: TESTLOG
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-5
+    LOGICAL :: TEST
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: R(DIM,DIM),Q(DIM,DIM)
@@ -26,36 +26,27 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R)
     Q = ID
     MATROTM1 = ID
     DO LOWESTELEM = 1,DIM-1
-            DO I = 1,DIM
-                VEC(I) = R(I,LOWESTELEM)
-            ENDDO 
-            CALL HOUSESTEP(DIM,VEC,LOWESTELEM,MATROTTAMP)
-            CALL PRODMAT(DIM,MATROTTAMP,R,R)
-            CALL PRODMAT(DIM,Q,MATROTTAMP,Q)
-        ! --- VERIFICATION --- !
-        TESTLOG = .FALSE.
-        DO I = LOWESTELEM+1,DIM
-            IF (ABS(R(I,LOWESTELEM)) > EPS0) TESTLOG = .TRUE.
-        ENDDO
-        IF (TESTLOG) THEN
-!            WRITE(6,'(A)') 'PROBLEM HOUSEHOLDER STEP'
-            WRITE(ERR,'(A,10X,A,10X,I5)')  'PROBLEM HOUSEHOLDER STEP','LOWEST ELEMENT =', LOWESTELEM
-            WRITE(ERR,'(100E14.5)') (R(I,LOWESTELEM),I=1,DIM)
-        ENDIF
+        DO I = 1,DIM
+            VEC(I) = R(I,LOWESTELEM)
+        ENDDO 
+        CALL HOUSESTEP(DIM,VEC,LOWESTELEM,MATROTTAMP)
+        CALL PRODMAT(DIM,MATROTTAMP,R,R)
+        CALL PRODMAT(DIM,Q,MATROTTAMP,Q)
     ENDDO
 
         ! --- VERIFICATION --- !
     ERR = 97
-    CALL PRODMAT(DIM,Q,R,PROD)
-    TESTLOG = .FALSE.
-    DO I = 1,DIM
-        DO J = 1,DIM
-            IF(ABS(PROD(I,J)-MATRIX(I,J)) > EPS0) TESTLOG = .TRUE.
+    TEST = .FALSE.
+    DO I = 1,DIM-1
+        DO J = I+1,DIM
+            IF (ABS(R(J,I)) > CONV) TEST = .TRUE.
         ENDDO
     ENDDO
-    IF (TESTLOG) THEN
+
+    IF (TEST) THEN
         OPEN(UNIT = ERR,FILE = 'error')
         WRITE(ERR,'(A)') 'ERROR QR DECOMPOSITION HOUSEHOLDER'
+        WRITE(ERR,'(A,4X,ES14.5)') 'CRIT CONV',CONV
         WRITE(ERR,'(A)') 'Q ='
         DO I = 1,DIM
             WRITE(ERR,'(100F14.5)') (Q(I,J), J = 1,DIM)

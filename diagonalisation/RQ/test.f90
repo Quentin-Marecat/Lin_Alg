@@ -8,28 +8,32 @@ PROGRAM TEST
     
     IN =99
     OUT = 98
-
-!    DIM = 10
-!    ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
-!    M1 = 0
-!    DO I = 1,DIM
-!        DO J = 1,DIM
-!        M1(I,J) = I+J
-!        ENDDO
-!    ENDDO
     OPEN(UNIT = OUT,FILE = 'output')
-    OPEN(UNIT = IN,FILE = 'input', STATUS= 'OLD', ACTION = 'READ')
-    READ(IN,*) DIM
+
+    DIM = 20
     ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
+    M1 = 0
+    CALL RANDOM_NUMBER(M1)
     DO I = 1,DIM
-        READ(IN,*) (M1(I,J),J=1,DIM)
+        DO J = I,DIM
+        M1(I,J) = 200*M1(I,J) - 100
+        M1(J,I) = M1(I,J)
+        ENDDO
     ENDDO
-    CLOSE(IN)
-    !    CALL RQ_DIAG(DIM,M1,EV,EF,.TRUE.)
+!    OPEN(UNIT = IN,FILE = 'input', STATUS= 'OLD', ACTION = 'READ')
+!    READ(IN,*) DIM
+!    ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
+!    DO I = 1,DIM
+!        READ(IN,*) (M1(I,J),J=1,DIM)
+!    ENDDO
+!    CLOSE(IN)
+
+!    CALL RQ_DIAG(DIM,M1,EV,EF,.TRUE.)
     CALL RQ_SHIFT_DIAG(DIM,M1,EV,EF,.TRUE.)
+
     WRITE(OUT,'(A)') '***********************'
     WRITE(OUT,'(A)') 'EIGENVALUES :'
-    WRITE(OUT,'(100E14.3)') EV
+    WRITE(OUT,'(100F14.5)') EV
     WRITE(OUT,'(A)') '***********************'
     WRITE(OUT,'(A)') 'EIGENVECTORS : '
     DO J = 1,DIM

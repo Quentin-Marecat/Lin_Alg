@@ -7,7 +7,7 @@ SUBROUTINE HOUSESTEP(DIM,VEC,LOWESTELEM,MATROT)
     ! --- OUTPUT _ MATROT : ROTATION MATRIX : MATROT*VEC = VECHOUSE
     ! -------------------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-14
+    REAL*8, PARAMETER :: EPS0 = 1.D-15
     LOGICAL :: TESTLOG
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: VEC(DIM)
