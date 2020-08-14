@@ -11,14 +11,18 @@ operation_mat.f90 IS NECESSARY
 (BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
 
-INVERSE METHOD :
-gfortran '-fflags' -o 'name_exe'.x *.f90 'path_inverse_sub'*.f90'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 LU METHOD
-gfortran '-fflags' -o 'name_exe'.x *.f90 'path_LU_sub'*.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 LU_Mat.f90 'path_LU_sub'.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+
+QR METHOD
+gfortran -o 'name_exe'.x test.f90 Gauss_Seidel.f90 'path_QRhouse_sub'QRhouse.f90 'path_housestep_sub'housestep.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+
 JACOBI
 gfortran -o 'name_exe'.x test.f90 Jacobi.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+
 GAUSS_SEIDEL METHOD
 gfortran -o 'name_exe'.x test.f90 Gauss_Seidel.f90 'path_InvQR_sub'InvQR.f90 'path_QRhouse_sub'QRhouse.f90 'path_housestep_sub'housestep.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
 
