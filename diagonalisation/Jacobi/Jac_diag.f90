@@ -79,7 +79,6 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC)
     DO I = 1,DIM
         EIGENVAL(I) = JAC(I,I)
     ENDDO
-    WRITE(6,*) COMPT
 
     CALL ORDERING(DIM,EIGENVAL,EIGENVEC)
 
@@ -92,7 +91,7 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC)
         WRITE(ERR,'(A)') '***********************'
         WRITE(ERR,'(A)') 'DIAGONAL MATRIX OBTAINED'
         DO I = 1,DIM
-            WRITE(ERR,*) (JAC(I,J),J=1,DIM)
+            WRITE(ERR,'(100ES14.5)') (JAC(I,J),J=1,DIM)
         ENDDO
         WRITE(ERR,'(A)') '***********************'
     ENDIF

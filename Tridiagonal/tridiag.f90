@@ -1,8 +1,8 @@
-SUBROUTINE TRIDIAG(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
+SUBROUTINE TRIDIAG_QR(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ---------------------------------------------------------------- !
     ! --- THIS SUBROUTINE TRIDIAGONALIZE THE REAL SYMMETRIC MATRIX --- !
-    ! --- housestep.f90 IS NECESSARY --------------------------------- !
+    ! --- housestep.f90 operation_mat.f90 ARE NECESSARY -------------- !
     ! ---------------------------------------------------------------- !
     IMPLICIT NONE 
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CRITOK = 1.D-12
