@@ -1,11 +1,13 @@
-SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
+SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
         ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! --------------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE TRIDIAGONALIZE THE REAL SYMMETRIC MATRIX USING GIVENS ROTATION MATRIX --- !
     ! --- operation_mat.f90 IS NECESSARY ---------------------------------------------------------- !
+    ! --- CHECK = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------ !
     ! --------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12, MAXSWEEP = 2D2, PI = 3.14159265359
+    LOGICAL,INTENT(IN) :: CHECK
     LOGICAL :: TEST
     INTEGER :: DIM
     REAL*8 :: MATRIX(DIM,DIM)
@@ -72,18 +74,20 @@ SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT)
 
 
         ! --- VERIFICATION --- !
-    TEST = .FALSE.
-    IF (COMPT == MAXSWEEP) TEST = .TRUE.
-    IF (TEST) THEN
-        OPEN(UNIT = ERR, FILE = 'error')
-        WRITE(ERR,'(A,10X,A,4X,ES14.1,4X,A,4X,ES14.1,4X,A,4X,ES14.5)') 'PROBLEM TRIGONALISATION','NORM FROEB EXTRA-TRIDIAG',NORMF,&
-        & 'CRIT CONV =',CONV,'MAXSWEEP =',MAXSWEEP
-        WRITE(ERR,'(A)') '***********************'
-        WRITE(ERR,'(A)') 'TRIGONAL MATRIX OBTAINED'
-        DO I = 1,DIM
-            WRITE(ERR,'(100ES14.5)') (TRIDIAGMAT(I,J),J=1,DIM)
-        ENDDO
-        WRITE(ERR,'(A)') '***********************'
+    IF (CHECK) THEN
+        TEST = .FALSE.
+        IF (COMPT == MAXSWEEP) TEST = .TRUE.
+        IF (TEST) THEN
+            OPEN(UNIT = ERR, FILE = 'error')
+            WRITE(ERR,'(A,10X,A,4X,ES14.1,4X,A,4X,ES14.1,4X,A,4X,ES14.5)') 'PROBLEM TRIGONALISATION','NORM FROEB EXTRA-TRIDIAG',NORMF,&
+            & 'CRIT CONV =',CONV,'MAXSWEEP =',MAXSWEEP
+            WRITE(ERR,'(A)') '***********************'
+            WRITE(ERR,'(A)') 'TRIGONAL MATRIX OBTAINED'
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') (TRIDIAGMAT(I,J),J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)') '***********************'
+        ENDIF
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
