@@ -223,6 +223,38 @@ SUBROUTINE PRODMAT_BLOC_QR(DIM,BLOC,Q,RINT,R)
 END SUBROUTINE
 
 
+
+SUBROUTINE PRODMAT_BLOC_QHESS(DIM,BLOC,Q,RINT,R)
+  ! --------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN Q AND RINT ----------------------- !
+  ! --- WHERE Q IS BLOCK DIAGONAL, Q = ((In,0),(0,FULL)) WITH DIM(IN)= BLOC*BLOC ---- !
+  ! --- R IS BUILT TO BE HESSENBERG MATRIX WITH 1 COLUMN OF ZERO ADDED TO RINT ------ !
+  ! --------------------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM, BLOC
+  REAL*8, INTENT(IN) :: Q(DIM,DIM), RINT(DIM,DIM)
+  REAL*8, INTENT(OUT) :: R(DIM,DIM)
+  INTEGER :: I,J,K
+  REAL*8 :: RINTT(DIM,DIM)
+
+  RINTT = RINT
+  R = RINT
+
+  IF (BLOC < DIM) THEN
+    DO J = BLOC+1,DIM 
+      DO I = BLOC+1,DIM 
+        R(I,J) = 0
+        IF(J /= BLOC+1 .OR. I == BLOC+1 .OR. I == BLOC+2) THEN
+          DO K = BLOC+1,DIM 
+            R(I,J) = R(I,J) + Q(I,K)*RINTT(K,J)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDDO
+  ENDIF
+END SUBROUTINE
+
+
 SUBROUTINE PRODMAT_BLOC_Q(DIM,BLOC,M1,Q,PROD)
   ! --------------------------------------------------------------------------------- !
   ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN M1 AND Q ----------------------- !
@@ -315,4 +347,34 @@ SUBROUTINE PRODMAT_BLOC_Q_TRI(DIM,BLOC,M1,Q,PROD)
     ENDDO
   ENDIF
 END SUBROUTINE
+
+
+
+
+
+
+
+SUBROUTINE PRODMAT_RQ(DIM,R,Q,PROD)
+  ! -------------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT OF R*Q, WHERE R IS A UPPER DIAGONAL MATRIX --- !
+  ! --- PROD IS TRIDIAGONAL -------------------------------------------------------------- !
+  ! -------------------------------------------------------------------------------------- !
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8, INTENT(IN) :: R(DIM,DIM), Q(DIM,DIM)
+  REAL*8, INTENT(OUT) :: PROD(DIM,DIM)
+  INTEGER :: I,J,K
+  
+  PROD = 0
+  DO I = 1,DIM-1
+    DO J = I,I+1
+      DO K = I,DIM
+        PROD(I,J) = PROD(I,J) + R(I,K)*Q(K,J)
+      ENDDO
+      PROD(J,I) = PROD(I,J)
+    ENDDO
+  ENDDO
+  PROD(DIM,DIM) = R(DIM,DIM)*Q(DIM,DIM)
+
+END SUBROUTINE
+
   
