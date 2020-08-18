@@ -1,4 +1,4 @@
-SUBROUTINE QRHOUSE_TRI(DIM,MATRIX,Q,R)
+SUBROUTINE QRHOUSE_TRI(DIM,MATRIX,Q,R,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! -------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE GENERATE QR DECOMPOSITION USING HOUSEHOLDER SCHEME --- !
@@ -8,6 +8,7 @@ SUBROUTINE QRHOUSE_TRI(DIM,MATRIX,Q,R)
     ! -------------------------------------------------------------------------- !
     IMPLICIT NONE
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12
+    LOGICAL,INTENT(IN) :: CHECK
     LOGICAL :: TEST
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
@@ -57,26 +58,28 @@ SUBROUTINE QRHOUSE_TRI(DIM,MATRIX,Q,R)
         ENDDO
     ENDDO
 
-    IF (TEST) THEN
-        OPEN(UNIT = ERR,FILE = 'error')
-        WRITE(ERR,'(A)') 'ERROR QR DECOMPOSITION HOUSEHOLDER'
-        WRITE(ERR,'(A,4X,ES14.5)') 'CRIT CONV',CONV
-        WRITE(ERR,'(A)') 'Q ='
-        DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (Q(I,J), J = 1,DIM)
-        ENDDO 
-        WRITE(ERR,'(A)') '*************'
-        WRITE(ERR,'(A)') 'R ='
-        DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (R(I,J), J = 1,DIM)
-        ENDDO 
-        WRITE(ERR,'(A)') '*************'
-        WRITE(ERR,'(A)') 'QR - M ='
-        DO I = 1,DIM
-            WRITE(ERR,'(100ES14.5)') ((MATTAMP(J,I) - MATRIX(J,I)), J = 1,DIM)
-        ENDDO 
-        WRITE(ERR,'(A)') '*************'
-    ENDIF
+    IF (CHECK) THEN
+        IF (TEST) THEN
+            OPEN(UNIT = ERR,FILE = 'error')
+            WRITE(ERR,'(A)') 'ERROR QR DECOMPOSITION HOUSEHOLDER'
+            WRITE(ERR,'(A,4X,ES14.5)') 'CRIT CONV',CONV
+            WRITE(ERR,'(A)') 'Q ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (Q(I,J), J = 1,DIM)
+            ENDDO 
+            WRITE(ERR,'(A)') '*************'
+            WRITE(ERR,'(A)') 'R ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (R(I,J), J = 1,DIM)
+            ENDDO 
+            WRITE(ERR,'(A)') '*************'
+            WRITE(ERR,'(A)') 'QR - M ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') ((MATTAMP(J,I) - MATRIX(J,I)), J = 1,DIM)
+            ENDDO 
+            WRITE(ERR,'(A)') '*************'
+        ENDIF
+     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) WRITE(6,'(A)') 'ERROR QR HOUSEHOLDER, SEE FILE error'
