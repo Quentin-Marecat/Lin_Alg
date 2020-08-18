@@ -5,6 +5,7 @@ SUBROUTINE GM(DIM,MATRIX,ORTHOMATRIX)
     ! --- operation_mat.f90 is necessary ------------------------------------- !
     ! ------------------------------------------------------------------------ !
     IMPLICIT NONE 
+    REAL*8, PARAMETER :: EPS0 = 1.D-15
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: ORTHOMATRIX(DIM,DIM)

@@ -186,3 +186,133 @@ SUBROUTINE NORME_FROEB(DIM,MATRIX,NORME)
   ENDDO
   NORME = SQRT(NORME)
 END SUBROUTINE
+
+
+
+
+
+
+SUBROUTINE PRODMAT_BLOC_QR(DIM,BLOC,Q,RINT,R)
+  ! --------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN Q AND RINT ----------------------- !
+  ! --- WHERE Q IS BLOCK DIAGONAL, Q = ((In,0),(0,FULL)) WITH DIM(IN)= BLOC*BLOC ---- !
+  ! --- R IS BUILT TO BE UPPER MATRIX WITH 1 COLUMN OF ZERO ADDED TO RINT ----------- !
+  ! --------------------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM, BLOC
+  REAL*8, INTENT(IN) :: Q(DIM,DIM), RINT(DIM,DIM)
+  REAL*8, INTENT(OUT) :: R(DIM,DIM)
+  INTEGER :: I,J,K
+  REAL*8 :: RINTT(DIM,DIM)
+
+  RINTT = RINT
+  R = RINT
+
+  IF (BLOC < DIM) THEN
+    DO J = BLOC+1,DIM 
+      DO I = BLOC+1,DIM 
+        R(I,J) = 0
+        IF(J /= BLOC+1 .OR. I == BLOC+1) THEN
+          DO K = BLOC+1,DIM 
+            R(I,J) = R(I,J) + Q(I,K)*RINTT(K,J)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDDO
+  ENDIF
+END SUBROUTINE
+
+
+SUBROUTINE PRODMAT_BLOC_Q(DIM,BLOC,M1,Q,PROD)
+  ! --------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN M1 AND Q ----------------------- !
+  ! --- WHERE Q IS BLOCK DIAGONAL, Q = ((In,0),(0,FULL)) WITH DIM(IN)= BLOC*BLOC ---- !
+  ! --------------------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM, BLOC
+  REAL*8, INTENT(IN) :: M1(DIM,DIM), Q(DIM,DIM)
+  REAL*8, INTENT(OUT) :: PROD(DIM,DIM)
+  INTEGER :: I,J,K
+  REAL*8 :: M1T(DIM,DIM)
+
+  M1T = M1
+  PROD = M1
+
+  IF (BLOC < DIM) THEN
+    DO J = BLOC+1,DIM 
+      DO I = 1,DIM 
+        PROD(I,J) = 0
+          DO K = BLOC+1,DIM 
+            PROD(I,J) = PROD(I,J) + M1T(I,K)*Q(K,J)
+          ENDDO
+      ENDDO
+    ENDDO
+  ENDIF
+END SUBROUTINE
+  
+
+
+
+
+
+
+SUBROUTINE PRODMAT_BLOC_QR_TRI(DIM,BLOC,Q,RINT,R)
+  ! --------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN Q AND RINT ---------------------- !
+  ! --- Q IS ID MATRIX WHERE ONLY 2*2 BLOC ELEMENT ON LOWESTELEM ARE MODIFIED ------- !
+  ! --- R IS BUILT TO BE UPPER MATRIX WITH 1 COLUMN OF ZERO ADDED TO RINT ----------- !
+  ! --------------------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM, BLOC
+  REAL*8, INTENT(IN) :: Q(DIM,DIM), RINT(DIM,DIM)
+  REAL*8, INTENT(OUT) :: R(DIM,DIM)
+  INTEGER :: I,J,K
+  REAL*8 :: RINTT(DIM,DIM)
+
+  RINTT = RINT
+  R = RINT
+
+  IF (BLOC < DIM) THEN
+    DO J = BLOC+1,DIM
+      DO I = BLOC+1,BLOC+2
+        R(I,J) = 0
+        IF(J /= BLOC+1 .OR. I == BLOC+1) THEN
+          DO K = BLOC+1,BLOC+2 
+            R(I,J) = R(I,J) + Q(I,K)*RINTT(K,J)
+          ENDDO
+        ENDIF
+      ENDDO
+    ENDDO
+  ENDIF
+END SUBROUTINE
+
+
+SUBROUTINE PRODMAT_BLOC_Q_TRI(DIM,BLOC,M1,Q,PROD)
+  ! ------------------------------------------------------------------------------------ !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT BETWEEN M1 AND Q --------------------------- !
+  ! --- M1 IS BLOCK DIAGONAL, M1 = ((HESS,0),(0,IN)) WHERE HESS IS AN HESSENBERG MAT --- !
+  ! --- WITH DIM(HESS) = BLOC+2*BLOC+2
+  ! --- WHERE Q IS BLOCK DIAGONAL, Q = ((In,0),(0,FULL)) WITH DIM(IN)= BLOC*BLOC ------- !
+  ! ------------------------------------------------------------------------------------ !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM, BLOC
+  REAL*8, INTENT(IN) :: M1(DIM,DIM), Q(DIM,DIM)
+  REAL*8, INTENT(OUT) :: PROD(DIM,DIM)
+  INTEGER :: I,J,K
+  REAL*8 :: M1T(DIM,DIM)
+
+  M1T = M1
+  PROD = M1
+
+  IF (BLOC < DIM) THEN
+    DO J = BLOC+1,BLOC+2
+      DO I = 1,BLOC+2
+        PROD(I,J) = 0
+          DO K = BLOC+1,BLOC+2 
+            PROD(I,J) = PROD(I,J) + M1T(I,K)*Q(K,J)
+          ENDDO
+      ENDDO
+    ENDDO
+  ENDIF
+END SUBROUTINE
+  

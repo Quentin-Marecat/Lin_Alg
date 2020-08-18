@@ -2,6 +2,7 @@ PROGRAM TEST
     IMPLICIT NONE
     REAL*8,ALLOCATABLE :: M(:,:), Q(:,:), R(:,:)
     INTEGER :: DIM,I,J, STAT
+    REAL*8 :: X
     OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
     OPEN(UNIT = 98,FILE = 'output')
 !    READ(99,*) DIM
@@ -9,20 +10,28 @@ PROGRAM TEST
 !    DO I = 1,DIM
 !        READ(99,*) (M(I,J), J = 1,DIM)
 !   ENDDO
-    DIM = 10
+! --- M IS TRIGONAL SYMETRIC --- !
+    DIM = 100
     ALLOCATE(M(DIM,DIM),Q(DIM,DIM),R(DIM,DIM))
     M = 0
-    CALL RANDOM_NUMBER(M)
-    DO I = 1,DIM
-        DO J = I,DIM
-        M(I,J) = 200*M(I,J) - 100
-        M(J,I) = M(I,J)
-        ENDDO
+    DO I = 1,DIM-1
+    CALL RANDOM_NUMBER(X)
+    M(I,I) = 200*X - 100
+    CALL RANDOM_NUMBER(X)
+    M(I+1,I) = 200*X - 100
+    M(I,I+1) = M(I+1,I)
     ENDDO
-!    CALL QRGRAM(DIM,M,Q,R)
-    CALL QRHOUSE(DIM,M,Q,R)
+    CALL RANDOM_NUMBER(X)
+    M(DIM,DIM) = 200*X - 100
+
+    CALL QRHOUSE_TRI(DIM,M,Q,R)
 
     WRITE(98,*) 'QR DEC'
+    WRITE(98,'(A)') 'INITIAL MATRIX'
+    DO I = 1,DIM
+        WRITE(98,'(100F14.5)') (M(I,J),J = 1,DIM)
+    ENDDO
+    WRITE(98,*) '*******************'
     WRITE(98,'(A)') 'Q UNITARY MATRIX'
     DO I = 1,DIM
         WRITE(98,'(100F14.5)') (Q(I,J),J = 1,DIM)
