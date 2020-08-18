@@ -1,13 +1,13 @@
-SUBROUTINE HESSENBERG_HOUSE(DIM,MATRIX,ROTMAT,HESS,VERIF)
+SUBROUTINE HESSENBERG_HOUSE(DIM,MATRIX,ROTMAT,HESS,CHECK)
     ! ---------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE GIVE THE QR DECOMPOSITION OF MAT WHERE R IS AN HESSENBERG MATRIX --- !
     ! --- THIS ALGORTITHME IS SIMILARY TO TRIGONALISATION METHOD ----------------------------- !
     ! --- MAT MUST BE SYMMETRIC -------------------------------------------------------------- !
-    ! --- VERIF = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------------------------------ !
+    ! --- CHECK = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------------------------------ !
     ! ---------------------------------------------------------------------------------------- !
     REAL*8, PARAMETER :: EPS0 = 1D-15, CRITOK = 1D-11
     INTEGER, INTENT(IN) :: DIM
-    LOGICAL,INTENT(IN) :: VERIF
+    LOGICAL,INTENT(IN) :: CHECK
     LOGICAL :: TEST
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: ROTMAT(DIM,DIM),HESS(DIM,DIM)
@@ -36,7 +36,7 @@ SUBROUTINE HESSENBERG_HOUSE(DIM,MATRIX,ROTMAT,HESS,VERIF)
         CALL PRODMAT_BLOC_Q(DIM,LOWESTELEM,ROTMAT,ROTMATTAMP,ROTMAT)
     ENDDO
     ! --- VERIFICATION --- !
-    IF (VERIF) THEN
+    IF (CHECK) THEN
         TEST = .FALSE.
         CALL NORME_FROEB(DIM,MATRIX,FROEB1)
         CALL NORME_FROEB(DIM,HESS,FROEB2)
