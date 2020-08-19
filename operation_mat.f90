@@ -44,6 +44,32 @@ SUBROUTINE MATAPPLI(DIM,ENDO,V0,V1)
   ENDDO
 END SUBROUTINE 
 
+SUBROUTINE MATAPPLI_TRI(DIM,ENDO,V0,V1)
+  ! --------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE APPLY THE LINEAR APPLICATION ENDO TO V0 AND GIVE V1 --- !
+  ! --- ENDO IS TRIDIAGONAL --------------------------------------------------- !
+  ! --- V0 AND V1 CAN BE THE SAME BUT V0 IS ERASED ---------------------------- !
+  ! --------------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8,INTENT(IN) :: ENDO(DIM,DIM),V0(DIM)
+  REAL*8,INTENT(OUT) :: V1(DIM)
+  REAL*8 :: VTAMP(DIM)
+  INTEGER :: I, J
+  VTAMP = V0
+  V1 = 0
+  DO J = 1,2
+    V1(1) = V1(1) + ENDO(1,J)*VTAMP(J)
+  ENDDO
+  DO I = 2,DIM-1
+      DO J = I-1,I+1
+          V1(I) = V1(I) + ENDO(I,J)*VTAMP(J)
+      ENDDO
+  ENDDO
+  DO J = DIM-1,DIM
+    V1(DIM) = V1(DIM) + ENDO(DIM,J)*VTAMP(J)
+  ENDDO
+END SUBROUTINE 
 
 
 
@@ -357,6 +383,7 @@ END SUBROUTINE
 SUBROUTINE PRODMAT_RQ(DIM,R,Q,PROD)
   ! -------------------------------------------------------------------------------------- !
   ! --- THIS SUBROUTINE COMPUTE THE PRODUCT OF R*Q, WHERE R IS A UPPER DIAGONAL MATRIX --- !
+  ! --- Q IS AN HESSENBERG MATRIX -------------------------------------------------------- !
   ! --- PROD IS TRIDIAGONAL -------------------------------------------------------------- !
   ! -------------------------------------------------------------------------------------- !
   INTEGER, INTENT(IN) :: DIM
@@ -367,13 +394,49 @@ SUBROUTINE PRODMAT_RQ(DIM,R,Q,PROD)
   PROD = 0
   DO I = 1,DIM-1
     DO J = I,I+1
-      DO K = I,DIM
+      DO K = I,J+1
         PROD(I,J) = PROD(I,J) + R(I,K)*Q(K,J)
       ENDDO
       PROD(J,I) = PROD(I,J)
     ENDDO
   ENDDO
   PROD(DIM,DIM) = R(DIM,DIM)*Q(DIM,DIM)
+
+END SUBROUTINE
+
+
+
+
+SUBROUTINE PRODMAT_RQ_HESS(DIM,R,Q,PROD)
+  ! -------------------------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE PRODUCT OF R*Q, WHERE R IS A UPPER DIAGONAL MATRIX --- !
+  ! --- PROD AND Q ARE HESSENBERG -------------------------------------------------------- !
+  ! -------------------------------------------------------------------------------------- !
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8, INTENT(IN) :: R(DIM,DIM), Q(DIM,DIM)
+  REAL*8, INTENT(OUT) :: PROD(DIM,DIM)
+  INTEGER :: I,J,K
+  
+  PROD = 0
+  DO J = 1,DIM-1
+    DO K = 1,J+1
+      PROD(1,J) = PROD(1,J) + R(1,K)*Q(K,J)
+    ENDDO
+  ENDDO
+  DO K = 1,DIM
+    PROD(1,DIM) = PROD(1,DIM) + R(1,K)*Q(K,DIM)
+  ENDDO
+  DO I = 2,DIM-1
+    DO J = I-1,DIM
+      DO K = I,DIM
+        PROD(I,J) = PROD(I,J) + R(I,K)*Q(K,J)
+      ENDDO
+      PROD(J,I) = PROD(I,J)
+    ENDDO
+  ENDDO
+  DO J = DIM-1,DIM
+    PROD(DIM,J) = R(DIM,DIM)*Q(DIM,J)
+  ENDDO
 
 END SUBROUTINE
 
