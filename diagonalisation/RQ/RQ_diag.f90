@@ -10,7 +10,7 @@ SUBROUTINE RQ_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,SYM,EGNVEC,CHECK)
     ! --- IF CHECK = .TRUE., EGNVEC = .TRUE. ------------------------------------------ !
     ! --------------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: CONV = 1.D-6, EPS0 = 1.D-15
+    REAL*8, PARAMETER :: CONV = 1.D-12, EPS0 = 1.D-15
     INTEGER, PARAMETER :: MAXSTEP = 1D4
     LOGICAL,INTENT(IN) :: CHECK, EGNVEC
     LOGICAL :: TEST
@@ -46,19 +46,27 @@ SUBROUTINE RQ_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,SYM,EGNVEC,CHECK)
         CALL QRHOUSE_TRI(DIM,MATTRI,ROTTRISUP,TRISUP,.FALSE.)
         CALL PRODMAT_RQ(DIM,TRISUP,ROTTRISUP,MATTRI)
         IF (EGNVEC) CALL PRODMAT(DIM,EIGENVEC,ROTTRISUP,EIGENVEC)
+!        ! --- 0 ELEMENT CALCULATION --- !
+!        RES = 0
+!        DO I = 1,DIM
+!            DO J = 1,DIM
+!                VEC(J) = EIGENVEC(J,I)
+!            ENDDO
+!            CALL MATAPPLI_TRI(DIM,MATTAMP,VEC,VEC)
+!            DO J = 1,DIM
+!                VEC(J) = VEC(J) - MATTRI(I,I)*EIGENVEC(J,I)
+!            ENDDO
+!            CALL NORMVEC(DIM,VEC,RES2)
+!            IF (RES2 > RES) RES = RES2
+!        ENDDO
         ! --- 0 ELEMENT CALCULATION --- !
         RES = 0
-        DO I = 1,DIM
-            DO J = 1,DIM
-                VEC(J) = EIGENVEC(J,I)
+        DO I = 2,DIM
+            DO J = 1,I-1
+                RES = RES + MATTRI(I,J)**2
             ENDDO
-            CALL MATAPPLI_TRI(DIM,MATTAMP,VEC,VEC)
-            DO J = 1,DIM
-                VEC(J) = VEC(J) - MATTRI(I,I)*EIGENVEC(J,I)
-            ENDDO
-            CALL NORMVEC(DIM,VEC,RES2)
-            IF (RES2 > RES) RES = RES2
         ENDDO
+        RES = SQRT(2*RES)
         COMPT = COMPT + 1
     ENDDO
     DO I = 1,DIM
