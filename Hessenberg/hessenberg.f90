@@ -5,15 +5,14 @@ SUBROUTINE HESSENBERG_HOUSE(DIM,MATRIX,ROTMAT,HESS,CHECK)
     ! --- MAT MUST BE SYMMETRIC -------------------------------------------------------------- !
     ! --- CHECK = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------------------------------ !
     ! ---------------------------------------------------------------------------------------- !
-    REAL*8, PARAMETER :: EPS0 = 1D-15, CRITOK = 1D-11
-    INTEGER, INTENT(IN) :: DIM
     LOGICAL,INTENT(IN) :: CHECK
+    REAL*8, PARAMETER :: EPS0 = 1D-15, EPS = 1.D-12
+    INTEGER, INTENT(IN) :: DIM
     LOGICAL :: TEST
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: ROTMAT(DIM,DIM),HESS(DIM,DIM)
     REAL*8 :: ID(DIM,DIM)
-    REAL*8 :: VEC(DIM), ROTMATTAMP(DIM,DIM), FROEB1, FROEB2
-    REAL*8 :: ROTMATTAMPT(DIM,DIM),MATTAMP(DIM,DIM)
+    REAL*8 :: VEC(DIM), ROTMATTAMP(DIM,DIM),MATTEST(DIM,DIM)
     INTEGER :: LOWESTELEM, I,J,ERR, STAT
 
     ERR = 97
@@ -38,27 +37,32 @@ SUBROUTINE HESSENBERG_HOUSE(DIM,MATRIX,ROTMAT,HESS,CHECK)
     ! --- VERIFICATION --- !
     IF (CHECK) THEN
         TEST = .FALSE.
-        CALL NORME_FROEB(DIM,MATRIX,FROEB1)
-        CALL NORME_FROEB(DIM,HESS,FROEB2)
-        IF (ABS(FROEB1 - FROEB2) > CRITOK) TEST = .TRUE.
+        CALL PRODMAT(DIM,ROTMAT,HESS,MATTEST)
+        DO I = 1,DIM
+            DO J = 1,DIM
+                IF (ABS(MATTEST(I,J)-MATRIX(I,J)) > EPS) TEST = .TRUE.
+            ENDDO
+        ENDDO
 
         IF (TEST) THEN
-            OPEN(UNIT = ERR, FILE = 'error')
-            WRITE(ERR,'(A)')  'PROBLEM HESSENBERG'
-            WRITE(ERR,'(A)') 'FROEBIUS NORM'
-            WRITE(ERR,'(A,4X,ES14.5,10X,A,4X,ES14.5)') 'FROEBIUS MATRIX =',FROEB1,'FROEBIUS TRIDIAG =',FROEB2
-            WRITE(ERR,'(A,4X,ES14.5,10X,A,4X,ES14.5)') 'DELTA FROEBIUS =',FROEB1-FROEB2,'CRITERE ACPT =',CRITOK
-            WRITE(ERR,'(A)') 'HESSENBERG MATRIX OBTAINED'
+            OPEN(UNIT = ERR,FILE = 'error')
+            WRITE(ERR,'(A)') 'PROBLEM HESSENBERG DECOMPOSITION'
+            WRITE(ERR,'(A)') 'ROTATION MATRIX ='
             DO I = 1,DIM
-                WRITE(ERR,'(100E14.5)') (HESS(I,J), J=1,DIM)
+                WRITE(ERR,'(100F14.5)') (ROTMAT(I,J), J=1,DIM)
             ENDDO
-            WRITE(ERR,'(A)')  '****************'
-            CALL PRODMAT(DIM,ROTMAT,HESS,MATTAMP)
-            WRITE(ERR,'(A)') ' DIFFERENCE'
+            WRITE(ERR,'(A)')'***************'
+            WRITE(ERR,'(A)') 'HESSENBERG MATRIX ='
             DO I = 1,DIM
-                WRITE(ERR,'(100E14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
+                WRITE(ERR,'(100F14.5)') (HESS(I,J), J=1,DIM)
             ENDDO
-            WRITE(ERR,'(A)')  '****************'
+            WRITE(ERR,'(A)')'***************'
+            WRITE(ERR,'(A,4X,ES14.5)')'EPS',EPS
+            WRITE(ERR,'(A)') 'MATRIX - ROTMAT*HESSENBERG ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') (MATRIX(I,J) - MATTEST(I,J), J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)')'***************'
         ENDIF
     ENDIF
 

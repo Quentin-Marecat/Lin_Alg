@@ -3,8 +3,9 @@ PROGRAM TEST
     REAL*8,ALLOCATABLE :: M(:,:), L(:,:),MT(:,:)
     LOGICAL :: CHECK
     INTEGER :: DIM,I,J, STAT
-    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
     OPEN(UNIT = 98,FILE = 'output')
+
+!    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
 !    READ(99,*) DIM
 !    ALLOCATE(M(DIM,DIM),L(DIM,DIM),MT(DIM,DIM))
 !    DO I = 1,DIM

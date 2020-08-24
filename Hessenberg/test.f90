@@ -4,7 +4,16 @@ PROGRAM TEST
     REAL*8,ALLOCATABLE :: M(:,:), HESS(:,:), ROT(:,:)
     INTEGER :: DIM,I,J, STAT
     OPEN(UNIT = 98,FILE = 'output')
-    DIM = 10
+
+!    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
+!    READ(99,*) DIM
+!    READ(99,'(A)') TEXT
+!    ALLOCATE(M(DIM,DIM),TRI(DIM,DIM),ROT(DIM,DIM))
+!    DO I = 1,DIM
+!        READ(99,*) (M(I,J), J = 1,DIM)
+!   ENDDO
+
+    DIM = 100
     ALLOCATE(M(DIM,DIM),HESS(DIM,DIM),ROT(DIM,DIM))
     M = 0
     CALL RANDOM_NUMBER(M)
@@ -14,14 +23,9 @@ PROGRAM TEST
         M(J,I) = M(I,J)
         ENDDO
     ENDDO
-!    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
-!    READ(99,*) DIM
-!    READ(99,'(A)') TEXT
-!    ALLOCATE(M(DIM,DIM),TRI(DIM,DIM),ROT(DIM,DIM))
-!    DO I = 1,DIM
-!        READ(99,*) (M(I,J), J = 1,DIM)
-!   ENDDO
+
     CALL HESSENBERG_HOUSE(DIM,M,ROT,HESS,.TRUE.)
+    
     WRITE(98,*) 'HESSENBERG MATRIX'
     DO I = 1,DIM
         WRITE(98,'(100F14.5)') (HESS(I,J),J = 1,DIM)
