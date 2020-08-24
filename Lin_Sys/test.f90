@@ -6,28 +6,28 @@ PROGRAM TEST
     INTEGER :: DIM,I,J,STAT
     OPEN(UNIT = 98,FILE = 'output')
 
-    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
-    READ(99,*) DIM
-    READ(99,'(A)') TEXT
-    ALLOCATE(M(DIM,DIM),VEC(DIM),SOL(DIM))
-    DO I = 1,DIM
-        READ(99,*) (M(I,J), J = 1,DIM)
-    ENDDO
-    READ(99,'(A)') TEXT
-    READ(99,*) (VEC(I),I=1,DIM)
-
-!    DIM = 100
+!    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
+!    READ(99,*) DIM
+!    READ(99,'(A)') TEXT
 !    ALLOCATE(M(DIM,DIM),VEC(DIM),SOL(DIM))
-!    M = 0
-!    CALL RANDOM_NUMBER(M)
-!    CALL RANDOM_NUMBER(VEC)
 !    DO I = 1,DIM
-!        VEC(I) = 200*VEC(I) - 100
-!        DO J = I,DIM
-!        M(I,J) = 200*M(I,J) - 100
-!        M(J,I) = M(I,J)
-!        ENDDO
+!        READ(99,*) (M(I,J), J = 1,DIM)
 !    ENDDO
+!    READ(99,'(A)') TEXT
+!    READ(99,*) (VEC(I),I=1,DIM)
+
+    DIM = 100
+    ALLOCATE(M(DIM,DIM),VEC(DIM),SOL(DIM))
+    M = 0
+    CALL RANDOM_NUMBER(M)
+    CALL RANDOM_NUMBER(VEC)
+    DO I = 1,DIM
+        VEC(I) = 200*VEC(I) - 100
+        DO J = I,DIM
+        M(I,J) = 200*M(I,J) - 100
+        M(J,I) = M(I,J)
+        ENDDO
+    ENDDO
 
     CHECK = .TRUE.
 !    CALL INV_MAT(DIM,M,VEC,SOL,CHECK)

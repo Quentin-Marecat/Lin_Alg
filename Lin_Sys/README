@@ -8,24 +8,28 @@ NO MAKEFILE IS USED
 operation_mat.f90 IS NECESSARY
 
 
-(BEGGINERS ONLY)
+
 TO COMPUTE, PLEASE USE THE COMMAND
+
+INVERSION MATRIX METHOD
+gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_Mat.f90 'path_invesion_Mat_sub'/'name_inv_mat'.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+
 
 LU METHOD
 gfortran '-fflags' -o 'name_exe'.x test.f90 LU_Mat.f90 'path_LU_sub'.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
 QR METHOD
-gfortran -o 'name_exe'.x test.f90 Gauss_Seidel.f90 'path_QRhouse_sub'QRhouse.f90 'path_housestep_sub'housestep.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+gfortran -o 'name_exe'.x test.f90 QR_Mat.f90 'path_QRhouse_sub'QRhouse.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
 
 JACOBI
 gfortran -o 'name_exe'.x test.f90 Jacobi.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
 
 GAUSS_SEIDEL METHOD
-gfortran -o 'name_exe'.x test.f90 Gauss_Seidel.f90 'path_InvQR_sub'InvQR.f90 'path_QRhouse_sub'QRhouse.f90 'path_housestep_sub'housestep.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+gfortran -o 'name_exe'.x test.f90 Gauss_Seidel.f90 'path_InvQR_sub'InvQR.f90 'path_QRhouse_sub'QRhouse.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
 
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
 
-ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT
 
+ALL RIGHTS ARE STRICTLY RESERVED TO QUENTIN MARECAT
 FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr
