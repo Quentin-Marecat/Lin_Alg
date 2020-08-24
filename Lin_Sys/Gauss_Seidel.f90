@@ -1,14 +1,16 @@
-SUBROUTINE GAUSS_SEIDEL(DIM,MATRIX,VEC,SOL)
+SUBROUTINE GAUSS_SEIDEL(DIM,MATRIX,VEC,SOL,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ------------------------------------------------------------------------------------------------------ !
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING JACOBI ITERATIVE METHOD --- !
+    ! --- CONVERGE FASTER THAN JACOBI ---------------------------------------------------------------------- !
     ! --- MATRIX MUST BE SQUARE AND INVERSIBLE ------------------------------------------------------------- !
     ! --- RESIDUAL METHOD IS USED TO IMPROVE THE METHOD ---------------------------------------------------- !
     ! --- operation_mat.f90 InvQR.f90 QRhouse.f90 AND housestep.f90 ARE NECESSARY ----------------------------- !
     ! --- EXTREMELY BAD AND OUTDATED METHOD, OFTEN WORKS WHEN MATRIX IS DIAGONAL DOMINANT ------------------ !
     ! ------------------------------------------------------------------------------------------------------ !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-10
+    LOGICAL, INTENT(IN) :: CHECK
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13, EPS = 1.D-10
     INTEGER, PARAMETER :: MAXSTEP = 1D4
     LOGICAL :: TEST
     INTEGER, INTENT(IN) :: DIM
@@ -32,7 +34,7 @@ SUBROUTINE GAUSS_SEIDEL(DIM,MATRIX,VEC,SOL)
         ENDDO
     ENDDO
     A1(DIM,DIM) = MATRIX(DIM,DIM)
-    CALL INVMATQR(DIM,A1,AM1)
+    CALL INV_QR(DIM,A1,AM1,.FALSE.)
     CALL PRODMAT(DIM,AM1,A2,M)
     DIFF = 1
     COMPT = 0
@@ -54,33 +56,36 @@ SUBROUTINE GAUSS_SEIDEL(DIM,MATRIX,VEC,SOL)
     ENDDO
 
     ! --- VERIFICATION --- !
-    TEST = .FALSE.
-    IF (COMPT == MAXSTEP) THEN
-        TEST = .TRUE.
-        OPEN(UNIT = ERR, FILE = 'error')
-        WRITE(ERR,'(A,4X,A,4X,I15)') 'MAXSTEP REACHS','MAXSTEP =',MAXSTEP
-    ENDIF
-    CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
-    DO I = 1,DIM
-        IF (ABS(VECTEST(I) - VEC(I)) > CONV) TEST = .TRUE.
-    ENDDO
-    IF (TEST) THEN
-        OPEN(UNIT = ERR,FILE = 'error')
-        WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
-        WRITE(ERR,'(A)') 'A = '
+    IF (CHECK) THEN
+        TEST = .FALSE.
+        IF (COMPT == MAXSTEP) THEN
+            TEST = .TRUE.
+            OPEN(UNIT = ERR, FILE = 'error')
+            WRITE(ERR,'(A,4X,A,4X,I15)') 'MAXSTEP REACHS','MAXSTEP =',MAXSTEP
+        ENDIF
+        CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
         DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
+            IF (ABS(VECTEST(I) - VEC(I)) > EPS) TEST = .TRUE.
         ENDDO
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'x = '
-        WRITE(ERR,'(100F14.5)') (SOL(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'b = '
-        WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'ERROR = '
-        WRITE(ERR,'(100E14.4)') (VECTEST(I)-VEC(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
+        IF (TEST) THEN
+            OPEN(UNIT = ERR,FILE = 'error')
+            WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
+            WRITE(ERR,'(A)') 'A = '
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A)') 'x = '
+            WRITE(ERR,'(100F14.5)') (SOL(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A)') 'b = '
+            WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A,4X,ES14.5)')'EPS',EPS
+            WRITE(ERR,'(A)') 'ERROR = MAT*SOL - VEC '
+            WRITE(ERR,'(100ES14.4)') (VECTEST(I)-VEC(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+        ENDIF
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')

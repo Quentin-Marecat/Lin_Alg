@@ -1,4 +1,4 @@
-SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
+SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ----------------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING QR DECOMPOS OF A --- !
@@ -7,8 +7,9 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
     ! --- operation_mat.f90 QRhouse.f90 AND housestep.f90 ARE NECESSARY ----------------------------- !
     ! ----------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13
-    INTEGER, PARAMETER :: MAXSTEP = 1D5
+    LOGICAL, INTENT(IN) :: CHECK
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13, EPS = 1.D-10
+    INTEGER, PARAMETER :: MAXSTEP = 1D2
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM), VEC(DIM)
     REAL*8, INTENT(OUT) :: SOL(DIM)
@@ -22,16 +23,17 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
     IF (STAT == 0) CLOSE(ERR,STATUS = 'delete')
 
     ! ---------------------------------------------------------------------------------------------------- !
-    CALL QRHOUSE(DIM,MATRIX,Q,R)
+    CALL QRHOUSE(DIM,MATRIX,Q,R,.FALSE.)
     CALL TRANSPOSE(DIM,Q,QT)
     ! --- QR DECOMP SUBROUTINE FROM Quentin-Marecat PACKAGES IS USED, PLEASE FIND IT ON MY GITHUB PAGE --- !
 
     VEC2 = VEC
-    OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
+    OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 2) THEN
         COMPT = 0
         XNORME = 1
         SOL2 = 0
+        ! --- RESIDUAL METHOD IMPROVEMENT --- !
         DO WHILE(XNORME > CONV .AND. COMPT < MAXSTEP) 
             CALL MATAPPLI(DIM,QT,VEC2,SOLINT)
             SOL(DIM) = SOLINT(DIM)/R(DIM,DIM)
@@ -45,6 +47,7 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
             COMPT = COMPT + 1
             CALL NORMVEC(DIM,SOL,XNORME)
             CALL MATAPPLI(DIM,MATRIX,SOL,VECTAMP)
+            ! --- RESIDUAL METHOD IMPROVEMENT --- !
             DO I = 1,DIM
                 SOL2(I) = SOL2(I) + SOL(I)
                 VEC2(I) = VEC2(I) - VECTAMP(I) 
@@ -58,28 +61,30 @@ SUBROUTINE QR_MAT(DIM,MATRIX,VEC,SOL)
 
     SOL = SOL2
     ! --- VERIFICATION --- !
-    CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
-    TEST = .FALSE.
-    DO I = 1,DIM
-        IF (ABS(VECTEST(I) - VEC(I)) > EPS0) TEST = .TRUE.
-    ENDDO
-    IF (TEST) THEN
-        OPEN(UNIT = ERR,FILE = 'error')
-        WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
-        WRITE(ERR,'(A)') 'A = '
+    IF (CHECK) THEN
+        CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
+        TEST = .FALSE.
         DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
+            IF (ABS(VECTEST(I) - VEC(I)) > EPS) TEST = .TRUE.
         ENDDO
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'x = '
-        WRITE(ERR,'(100F14.5)') (SOL(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'b = '
-        WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
-        WRITE(ERR,'(A)') 'ERROR = '
-        WRITE(ERR,'(100E14.4)') (VECTEST(I)-VEC(I), I = 1,DIM)
-        WRITE(ERR,'(A)') '************'
+        IF (TEST) THEN
+            OPEN(UNIT = ERR,FILE = 'error')
+            WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
+            WRITE(ERR,'(A)') 'A = '
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A)') 'x = '
+            WRITE(ERR,'(100F14.5)') (SOL(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A)') 'b = '
+            WRITE(ERR,'(100F14.5)') (VEC(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+            WRITE(ERR,'(A)') 'ERROR = '
+            WRITE(ERR,'(100E14.4)') (VECTEST(I)-VEC(I), I = 1,DIM)
+            WRITE(ERR,'(A)') '************'
+        ENDIF
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
