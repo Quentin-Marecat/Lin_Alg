@@ -1,11 +1,12 @@
-SUBROUTINE GM(DIM,MATRIX,ORTHOMATRIX)
+SUBROUTINE GS(DIM,MATRIX,ORTHOMATRIX,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ------------------------------------------------------------------------ !
     ! --- THIS SUBROUTINE ORTHOGONALIZE A MATRIX USING GRAM-SCHMIDT SCHEME --- !
-    ! --- operation_mat.f90 is necessary ------------------------------------- !
+    ! --- operation_mat.f90 IS NECESSARY ------------------------------------- !
     ! ------------------------------------------------------------------------ !
     IMPLICIT NONE 
-    REAL*8, PARAMETER :: EPS0 = 1.D-15
+    LOGICAL, INTENT(IN) :: CHECK
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, EPS = 1.D-13
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: ORTHOMATRIX(DIM,DIM)
@@ -33,23 +34,32 @@ SUBROUTINE GM(DIM,MATRIX,ORTHOMATRIX)
     ENDDO
 
         ! --- VERIFICATION --- !
-    TEST = .FALSE.
-    CALL TRANSPOSE(DIM,ORTHOMATRIX,ORTHOMATRIXT)
-    CALL PRODMAT(DIM,ORTHOMATRIX,ORTHOMATRIXT,MATTEST)
-    ID = 0.
-    DO I = 1,DIM
-        ID(I,I) = 1
-        DO J = 1,DIM
-            IF (ABS(MATTEST(I,J)-ID(I,J)) > EPS0) TEST = .TRUE.
-        ENDDO
-    ENDDO
-    IF (TEST) THEN
-        OPEN(UNIT = ERR,FILE = 'error')
-        WRITE(ERR,'(A)') 'PROBLEM GM DECOMPOSITION'
-        WRITE(ERR,'(A)') 'L ='
+    IF (CHECK) THEN
+        TEST = .FALSE.
+        CALL TRANSPOSE(DIM,ORTHOMATRIX,ORTHOMATRIXT)
+        CALL PRODMAT(DIM,ORTHOMATRIX,ORTHOMATRIXT,MATTEST)
+        ID = 0.
         DO I = 1,DIM
-            WRITE(ERR,'(100F14.5)') (ORTHOMATRIX(I,J), J=1,DIM)
+            ID(I,I) = 1
+            DO J = 1,DIM
+                IF (ABS(MATTEST(I,J)-ID(I,J)) > EPS) TEST = .TRUE.
+            ENDDO
         ENDDO
+        IF (TEST) THEN
+            OPEN(UNIT = ERR,FILE = 'error')
+            WRITE(ERR,'(A)') 'PROBLEM GM DECOMPOSITION'
+            WRITE(ERR,'(A)') 'ORTHOGONALIZED MATRIX ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (ORTHOMATRIX(I,J), J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)')'***************'
+            WRITE(ERR,'(A,4X,ES14.5)')'EPS',EPS
+            WRITE(ERR,'(A)') 'ID - ORTHO*ORTHO(T) ='
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') (ID(I,J) - MATTEST(I,J), J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)')'***************'
+        ENDIF
     ENDIF
 
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
