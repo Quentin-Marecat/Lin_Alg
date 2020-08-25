@@ -1,4 +1,4 @@
-SUBROUTINE JACOBI(DIM,MATRIX,VEC,SOL,CHECK)
+SUBROUTINE GAUSS_JACOBI(DIM,MATRIX,VEC,SOL,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ------------------------------------------------------------------------------------------------------ !
     ! --- THIS SUBROUTINE FIND THE SOLUTION OF THE SYSTEM MATRIX*SOL = VEC USING JACOBI ITERATIVE METHOD --- !
@@ -9,20 +9,22 @@ SUBROUTINE JACOBI(DIM,MATRIX,VEC,SOL,CHECK)
     ! ------------------------------------------------------------------------------------------------------ !
     IMPLICIT NONE
     LOGICAL,INTENT(IN) :: CHECK
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13, EPS = 1.D-10, CONV2 = 1.D-13
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-13, EPS = 1.D-10
+    REAL*8, PARAMETER :: MAX = 1.D130, CONV2 = 1.D-13
     INTEGER, PARAMETER :: MAXSTEP = 1D4, MAXSTEP2 = 1D2
     LOGICAL :: TEST
     INTEGER, INTENT(IN) :: DIM
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM),VEC(DIM)
     REAL*8,INTENT(OUT) :: SOL(DIM)
-    REAL*8 ::  DM1(DIM,DIM),W(DIM,DIM) VECTEST(DIM),XNORME
+    REAL*8 ::  DM1(DIM,DIM),W(DIM,DIM), VECTEST(DIM),XNORME
     REAL*8 ::  DIFF, DM1W(DIM,DIM), DM1VEC(DIM), SOLP1(DIM)
-    REAL*8 :: SOL2(DIM), VEC2(DIM)
+    REAL*8 :: SOL2(DIM), VEC2(DIM), VECTAMP(DIM)
     INTEGER :: I,J, COMPT,COMPT2, ERR, STAT
 
     ERR = 97
     OPEN(UNIT = ERR, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 0) CLOSE(ERR,STATUS = 'delete')
+    TEST = .FALSE.
 
     DM1 = 0
     W = 0
@@ -51,19 +53,23 @@ SUBROUTINE JACOBI(DIM,MATRIX,VEC,SOL,CHECK)
         CALL MATAPPLI(DIM,DM1,VEC2,DM1VEC)
         DIFF = 1
         COMPT = 0
-        SOL = DM1VEC
         DO WHILE(DIFF > CONV .AND. COMPT < MAXSTEP)
             CALL MATAPPLI(DIM,DM1W,SOL,SOLP1)
             DO I = 1,DIM
-                SOL(I) = SOL(I) - SOLP1(I)
+                SOL(I) = DM1VEC(I) - SOLP1(I)
             ENDDO
             ! --- CONVERGENCE --- !
             CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
-            VECTEST = VECTEST - VEC
+            VECTEST = VECTEST - VEC2
             CALL NORMVEC(DIM,VECTEST,DIFF)
             ! ------------------- !
             COMPT = COMPT + 1
+            IF (ABS(DIFF) > MAX) THEN
+                WRITE(6,'(A)') 'ERROR LINEAR SOLUTION, GAUSS_JACOBI DIVERGENCE'
+                STOP
+            ENDIF
         ENDDO
+        IF (COMPT == MAXSTEP) TEST = .TRUE.
         ! --- RESIDUAL METHOD IMPROVEMENT --- !
         COMPT2 = COMPT2 + 1
         CALL NORMVEC(DIM,SOL,XNORME)
@@ -73,23 +79,17 @@ SUBROUTINE JACOBI(DIM,MATRIX,VEC,SOL,CHECK)
             VEC2(I) = VEC2(I) - VECTAMP(I) 
         ENDDO
     ENDDO
-SOL = SOL2
+    SOL = SOL2
 
     ! --- VERIFICATION --- !
-    IF(CHECK) THEN
-        TEST = .FALSE.
-        IF (COMPT == MAXSTEP) THEN
-            TEST = .TRUE.
-            OPEN(UNIT = ERR, FILE = 'error')
-            WRITE(ERR,'(A,4X,A,4X,I15)') 'MAXSTEP REACHS','MAXSTEP =',MAXSTEP
-        ENDIF
+    IF (CHECK) THEN
         CALL MATAPPLI(DIM,MATRIX,SOL,VECTEST)
         DO I = 1,DIM
             IF (ABS(VECTEST(I) - VEC(I)) > EPS) TEST = .TRUE.
         ENDDO
         IF (TEST) THEN
             OPEN(UNIT = ERR,FILE = 'error')
-            WRITE(ERR,'(A)') 'PROBLEM SOLUTION'
+            WRITE(ERR,'(A)') 'PROBLEM GAUSS_JACOBI SOLUTION'
             WRITE(ERR,'(A)') 'A = '
             DO I = 1,DIM
                 WRITE(ERR,'(100F14.5)') (MATRIX(I,J), J = 1,DIM)
