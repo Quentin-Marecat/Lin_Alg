@@ -8,17 +8,19 @@ operation_mat.f90 IS NECESSARY
 
 
 
-(BEGGINERS ONLY)
 TO COMPUTE, PLEASE USE THE COMMAND
 
 QR INVERSION
-gfortran '-fflags' -o 'name_exe'.x test.f90 InvQR.f90 'path_QRHouseholder_sub'*.f90  'path_ope_mat_sub'operation_mat.f90&& ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_QR.f90 'path_QRHouseholder_sub'QRhouse.f90  'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
 LU INVERSION
-gfortran '-fflags' -o 'name_exe'.x test.f90 InvLU.f90 'path_LU_sub'*.f90 'path_Lin_Sys_sub'LU_Mat.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_LU.f90 'path_LU_sub'LU.f90 'path_Lin_Sys_sub'LU_Mat.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
-JACOBI INVERSION
-gfortran -o 'name_exe'.x test.f90 InvJac.f90 'path_lin_Jac_sub'Jacobi.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+GAUSS_JACOBI INVERSION
+gfortran -o 'name_exe'.x test.f90 Inv_Jac.f90 'path_lin_Jac_sub'Gauss_Jacobi.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
+
+GAUSS_SEIDEL INVERSION
+gfortran -o 'name_exe'.x test.f90 Inv_GS.f90 'path_lin_GS_sub'Gauss_Seidel.f90 'path_ope_mat_sub'operation_mat.f90 &&./'name_exe'.x
 
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
