@@ -3,20 +3,28 @@ PROGRAM TEST
     INTEGER :: DIM
     REAL*8, ALLOCATABLE :: M(:,:), L(:,:), U(:,:)
     INTEGER :: I,J, STAT
-    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
     OPEN(UNIT = 98,FILE = 'output')
-    READ(99,*) DIM
-!    DIM = 10
-    ALLOCATE(M(DIM,DIM),L(DIM,DIM),U(DIM,DIM))
+
+!    OPEN(UNIT = 99,FILE = 'input',STATUS = 'OLD', ACTION= 'READ')
+!    READ(99,*) DIM
+!    ALLOCATE(M(DIM,DIM),L(DIM,DIM),U(DIM,DIM))
 !    DO I = 1,DIM
-!        DO J = 1,DIM
-!            M(I,J) = I+J
-!        ENDDO
-!    ENDDO
+!        READ(99,*) (M(I,J), J = 1,DIM)
+!   ENDDO
+
+    DIM = 100
+    ALLOCATE(M(DIM,DIM),L(DIM,DIM),U(DIM,DIM))
+    M = 0
+    CALL RANDOM_NUMBER(M)
     DO I = 1,DIM
-        READ(99,*) (M(I,J), J = 1,DIM)
-   ENDDO
-    CALL LU(DIM,M,L,U)
+        DO J = I,DIM
+        M(I,J) = 200*M(I,J) - 100
+        M(J,I) = M(I,J)
+        ENDDO
+    ENDDO
+
+    CALL LU(DIM,M,L,U,.TRUE.)
+
     WRITE(98,'(A)') 'L ='
     DO I = 1,DIM
         WRITE(98,'(100F14.5)') (L(I,J),J = 1,DIM)
