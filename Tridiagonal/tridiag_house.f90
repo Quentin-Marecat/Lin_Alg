@@ -1,19 +1,18 @@
-SUBROUTINE TRIDIAG_QR(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
+SUBROUTINE TRIDIAG_HOUSE(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
     ! --- FOR ANY REPORT OR SUGGESTION, PLEASE CONTACT quentin.marecat@etu.umontpellier.fr --- !
     ! ---------------------------------------------------------------- !
     ! --- THIS SUBROUTINE TRIDIAGONALIZE THE REAL SYMMETRIC MATRIX --- !
-    ! --- housestep.f90 operation_mat.f90 ARE NECESSARY -------------- !
     ! --- CHECK = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------ !
     ! ---------------------------------------------------------------- !
     IMPLICIT NONE 
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CRITOK = 1.D-12
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, EPS = 1.D-10
     LOGICAL,INTENT(IN) :: CHECK
     LOGICAL :: TEST
     INTEGER :: DIM
     REAL*8 :: MATRIX(DIM,DIM)
     REAL*8,INTENT(OUT) :: TRIDIAGMAT(DIM,DIM), ROTMAT(DIM,DIM)
     REAL*8 :: ROTMATT(DIM,DIM), ID(DIM,DIM)
-    REAL*8 :: VEC(DIM), ROTMATTAMP(DIM,DIM), FROEB1, FROEB2
+    REAL*8 :: VEC(DIM), ROTMATTAMP(DIM,DIM)
     REAL*8 :: ROTMATTAMPT(DIM,DIM),MATTAMP(DIM,DIM)
     INTEGER :: LOWESTELEM, I,J,ERR, STAT
 
@@ -42,27 +41,30 @@ SUBROUTINE TRIDIAG_QR(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
     ! --- VERIFICATION --- !
     IF (CHECK) THEN
         TEST = .FALSE.
-        CALL NORME_FROEB(DIM,MATRIX,FROEB1)
-        CALL NORME_FROEB(DIM,TRIDIAGMAT,FROEB2)
-        IF (ABS(FROEB1 - FROEB2) > CRITOK) TEST = .TRUE.
-
+        CALL PRODMAT(DIM,ROTMAT,TRIDIAGMAT,MATTAMP)
+        CALL TRANSPOSE(DIM,ROTMAT,ROTMATT)
+        CALL PRODMAT(DIM,MATTAMP,ROTMATT,MATTAMP)
+        DO I = 1,DIM
+            DO J = 1,DIM
+                IF (ABS(MATTAMP(I,J)-MATRIX(I,J)) > EPS) TEST = .TRUE.
+            ENDDO
+        ENDDO
         IF (TEST) THEN
             OPEN(UNIT = ERR, FILE = 'error')
             WRITE(ERR,'(A)')  'PROBLEM TRIDIAGONALISATION'
-            WRITE(ERR,'(A)') 'FROEBIUS NORM'
-            WRITE(ERR,'(A,4X,ES14.5,10X,A,4X,ES14.5)') 'FROEBIUS MATRIX =',FROEB1,'FROEBIUS TRIDIAG =',FROEB2
-            WRITE(ERR,'(A,4X,ES14.5,10X,A,4X,ES14.5)') 'DELTA FROEBIUS =',FROEB1-FROEB2,'CRITERE ACPT =',CRITOK
             WRITE(ERR,'(A)') 'TRIDIAGONAL MATRIX OBTAINED'
             DO I = 1,DIM
-                WRITE(ERR,'(100E14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
+                WRITE(ERR,'(100F14.5)') (TRIDIAGMAT(I,J), J=1,DIM)
             ENDDO
             WRITE(ERR,'(A)')  '****************'
-            CALL PRODMAT(DIM,ROTMAT,TRIDIAGMAT,MATTAMP)
-            CALL TRANSPOSE(DIM,ROTMAT,ROTMATT)
-            CALL PRODMAT(DIM,MATTAMP,ROTMATT,MATTAMP)
-            WRITE(ERR,'(A)') ' DIFFERENCE'
+            WRITE(ERR,'(A)') 'ROTATION MATRIX'
             DO I = 1,DIM
-                WRITE(ERR,'(100E14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
+                WRITE(ERR,'(100F14.5)') (ROTMAT(I,J),J = 1,DIM)
+            ENDDO
+            WRITE(98,*) '*******************'
+            WRITE(ERR,'(A)') ' Q*TRI*Q(T) - MAT'
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
             ENDDO
             WRITE(ERR,'(A)')  '****************'
         ENDIF

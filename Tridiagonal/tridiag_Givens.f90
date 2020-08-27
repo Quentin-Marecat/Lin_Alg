@@ -6,13 +6,13 @@ SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
     ! --- CHECK = .TRUE. IF VERIFICATIONS HAVE TO BE DONE ------------ !
     ! --------------------------------------------------------------------------------------------- !
     IMPLICIT NONE 
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12, MAXSWEEP = 2D2, PI = 3.14159265359
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12, MAXSWEEP = 1D2, PI = 3.14159265359
     LOGICAL,INTENT(IN) :: CHECK
     LOGICAL :: TEST
     INTEGER :: DIM
     REAL*8 :: MATRIX(DIM,DIM)
     REAL*8,INTENT(OUT) :: TRIDIAGMAT(DIM,DIM), ROTMAT(DIM,DIM)
-    REAL*8 ::  ID(DIM,DIM)
+    REAL*8 ::  ID(DIM,DIM), MATTAMP(DIM,DIM), ROTMATT(DIM,DIM)
     REAL*8 ::  NORMF, THETA, T, C, S, TAMP
     INTEGER :: I, J, K, L, COMPT, ERR, STAT
 
@@ -24,6 +24,7 @@ SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
     DO I = 1,DIM
         ID(I,I) = 1
     ENDDO
+    ROTMAT = ID
 
     TRIDIAGMAT = MATRIX
     NORMF = 1.
@@ -72,21 +73,33 @@ SUBROUTINE TRIDIAG_GIVENS(DIM,MATRIX,TRIDIAGMAT,ROTMAT,CHECK)
     ENDDO
 
 
-
         ! --- VERIFICATION --- !
     IF (CHECK) THEN
         TEST = .FALSE.
         IF (COMPT == MAXSWEEP) TEST = .TRUE.
         IF (TEST) THEN
+            CALL PRODMAT(DIM,ROTMAT,TRIDIAGMAT,MATTAMP)
+            CALL TRANSPOSE(DIM,ROTMAT,ROTMATT)
+            CALL PRODMAT(DIM,MATTAMP,ROTMATT,MATTAMP)
             OPEN(UNIT = ERR, FILE = 'error')
-            WRITE(ERR,'(A,10X,A,4X,ES14.1,4X,A,4X,ES14.1,4X,A,4X,ES14.5)') 'PROBLEM TRIGONALISATION','NORM FROEB EXTRA-TRIDIAG',NORMF,&
-            & 'CRIT CONV =',CONV,'MAXSWEEP =',MAXSWEEP
+            WRITE(ERR,'(A,10X,A,4X,ES14.1,4X,A,4X,ES14.1,4X,A,4X,ES14.5)') 'PROBLEM TRIGONALISATION','NORM FROEB EXTRA-TRIDIAG'&
+            &,NORMF, 'CRIT CONV =',CONV,'MAXSWEEP =',MAXSWEEP
             WRITE(ERR,'(A)') '***********************'
-            WRITE(ERR,'(A)') 'TRIGONAL MATRIX OBTAINED'
+            WRITE(ERR,'(A)') 'TRIDIAGONAL MATRIX OBTAINED'
             DO I = 1,DIM
-                WRITE(ERR,'(100ES14.5)') (TRIDIAGMAT(I,J),J=1,DIM)
+                WRITE(ERR,'(100F14.5)') (TRIDIAGMAT(I,J),J=1,DIM)
             ENDDO
             WRITE(ERR,'(A)') '***********************'
+            WRITE(ERR,'(A)') 'ROTATION MATRIX'
+            DO I = 1,DIM
+                WRITE(ERR,'(100F14.5)') (ROTMAT(I,J),J = 1,DIM)
+            ENDDO
+            WRITE(98,*) '*******************'
+            WRITE(ERR,'(A)') ' Q*TRI*Q(T) - MAT'
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)')  '****************'
         ENDIF
     ENDIF
 
