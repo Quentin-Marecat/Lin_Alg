@@ -8,8 +8,8 @@ Here is the list of all packages of the depository :
 * LU decomposition
 * Hessenberg decomposition
 * Gram-Schmidt orthonormalization
-* Trigonalisation matrix Householder + Givens
-* Matrice inversion
+* Tridiagonalisation matrix Householder + Givens
+* Matrix inversion
 * RQ process diagonalization + shift method
 * Jacobi diagonalization
 * A.**x** = **b** solution with residual improvement
