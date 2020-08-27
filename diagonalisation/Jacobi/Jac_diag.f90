@@ -11,6 +11,7 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC,CHECK)
     REAL*8, INTENT(IN) :: MATRIX(DIM,DIM)
     REAL*8, INTENT(OUT) :: EIGENVAL(DIM), EIGENVEC(DIM,DIM)
     REAL*8 :: ID(DIM,DIM), MATTAMP(DIM,DIM),EIGENVECT(DIM,DIM)
+    REAL*8 :: VEC(DIM), NOR(DIM)
     REAL*8 :: JAC(DIM,DIM), NORMF, THETA, T, C, S, TAMP
     INTEGER :: I, J, K, L, COMPT, ERR, STAT
 
@@ -88,13 +89,6 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC,CHECK)
         TEST = .FALSE.
         IF (COMPT == MAXSWEEP) TEST = .TRUE.
         IF (TEST) THEN
-            JAC = ID
-            DO I = 1,DIM
-                JAC(I,I) = EIGENVAL(I)
-            ENDDO
-            CALL PRODMAT(DIM,EIGENVEC,JAC,MATTAMP)
-            CALL TRANSPOSE(DIM,EIGENVEC,EIGENVECT)
-            CALL PRODMAT(DIM,MATTAMP,EIGENVECT,MATTAMP)
             OPEN(UNIT = ERR, FILE = 'error')
             WRITE(ERR,'(A,10X,A,4X,ES14.1,4X,A,4X,ES14.1)') 'PROBLEM DIAGONALISATION','CRIT CONV =',CONV,'MAXSWEEP =',MAXSWEEP
             WRITE(ERR,'(A)') '***********************'
@@ -107,12 +101,34 @@ SUBROUTINE JAC_DIAG(DIM,MATRIX,EIGENVAL,EIGENVEC,CHECK)
             DO I = 1,DIM
                 WRITE(ERR,'(100F14.5)') (EIGENVEC(I,J),J = 1,DIM)
             ENDDO
-            WRITE(98,*) '*******************'
+            WRITE(ERR,*) '*******************'
+            JAC = ID
+            DO I = 1,DIM
+                JAC(I,I) = EIGENVAL(I)
+            ENDDO
+            CALL PRODMAT(DIM,EIGENVEC,JAC,MATTAMP)
+            CALL TRANSPOSE(DIM,EIGENVEC,EIGENVECT)
+            CALL PRODMAT(DIM,MATTAMP,EIGENVECT,MATTAMP)
             WRITE(ERR,'(A)') ' Q*D*Q(T) - MAT'
             DO I = 1,DIM
                 WRITE(ERR,'(100ES14.5)') (MATTAMP(I,J)-MATRIX(I,J), J=1,DIM)
             ENDDO
-            WRITE(ERR,'(A)')  '****************'
+            WRITE(ERR,'(A)') '***********************'
+            CALL PRODMAT(DIM,MATRIX,EIGENVEC,MATTAMP)
+            DO I = 1,DIM
+                DO J = 1,DIM
+                    VEC(J) = MATTAMP(J,I) - EIGENVAL(I)*EIGENVEC(J,I)
+                ENDDO
+                CALL NORMVEC(DIM,VEC,NOR(I))
+            ENDDO
+            WRITE(ERR,'(A)') 'MAT*EIGENVEC - EIGENVAL*EIGENVEC = 0'
+            DO I = 1,DIM
+                WRITE(ERR,'(100ES14.5)')(MATTAMP(J,I) - EIGENVAL(I)*EIGENVEC(J,I),J=1,DIM)
+            ENDDO
+            WRITE(ERR,'(A)') '***********************'
+            WRITE(ERR,'(A)') 'NORME (MAT*EIGENVEC - EIGENVAL*EIGENVEC = 0)'
+            WRITE(ERR,'(100ES14.5)') (NOR(I),I=1,DIM)
+            WRITE(ERR,'(A)') '***********************'
         ENDIF
     ENDIF
 
