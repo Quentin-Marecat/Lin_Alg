@@ -10,6 +10,14 @@ PROGRAM TEST
     OUT = 98
     OPEN(UNIT = OUT,FILE = 'output')
 
+!    OPEN(UNIT = IN,FILE = 'input', STATUS= 'OLD', ACTION = 'READ')
+!    READ(IN,*) DIM
+!    ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
+!    DO I = 1,DIM
+!        READ(IN,*) (M1(I,J),J=1,DIM)
+!    ENDDO
+!    CLOSE(IN)
+
     DIM = 100
     ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
     M1 = 0
@@ -20,14 +28,8 @@ PROGRAM TEST
         M1(J,I) = M1(I,J)
         ENDDO
     ENDDO
-!    OPEN(UNIT = IN,FILE = 'input', STATUS= 'OLD', ACTION = 'READ')
-!    READ(IN,*) DIM
-!    ALLOCATE(M1(DIM,DIM),EV(DIM),EF(DIM,DIM))
-!    DO I = 1,DIM
-!        READ(IN,*) (M1(I,J),J=1,DIM)
-!    ENDDO
-!    CLOSE(IN)
-    CALL JAC_DIAG(DIM,M1,EV,EF)
+
+    CALL JAC_DIAG(DIM,M1,EV,EF,.TRUE.)
 
     WRITE(OUT,'(A)') '***********************'
     WRITE(OUT,'(A)') 'EIGENVALUES :'
