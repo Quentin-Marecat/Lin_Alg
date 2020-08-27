@@ -6,7 +6,7 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R,CHECK)
     ! --- CHECK = .TRUE. IF VERIFICATIONS HAS TO BE DONE ----------------------- !
     ! -------------------------------------------------------------------------- !
     IMPLICIT NONE
-    REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12
+    REAL*8, PARAMETER :: EPS0 = 1.D-15, EPS = 1.D-12
     LOGICAL :: TEST
     LOGICAL, INTENT(IN) :: CHECK
     INTEGER, INTENT(IN) :: DIM
@@ -42,23 +42,17 @@ SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R,CHECK)
     IF (CHECK) THEN
         ERR = 97
         TEST = .FALSE.
-        DO I = 1,DIM-1
-            DO J = I+1,DIM
-                IF (ABS(R(J,I)) > CONV) TEST = .TRUE.
-            ENDDO
-        ENDDO
-
         CALL PRODMAT(DIM,Q,R,MATTAMP)
         DO I = 1,DIM
             DO J = 1,DIM
-                IF (ABS(MATTAMP(J,I) - MATRIX(J,I)) > CONV) TEST = .TRUE.
+                IF (ABS(MATTAMP(J,I) - MATRIX(J,I)) > EPS) TEST = .TRUE.
             ENDDO
         ENDDO
 
         IF (TEST) THEN
             OPEN(UNIT = ERR,FILE = 'error')
             WRITE(ERR,'(A)') 'ERROR QR DECOMPOSITION HOUSEHOLDER'
-            WRITE(ERR,'(A,4X,ES14.5)') 'CRIT CONV',CONV
+            WRITE(ERR,'(A,4X,ES14.5)') 'CRIT ACPT',EPS
             WRITE(ERR,'(A)') 'Q ='
             DO I = 1,DIM
                 WRITE(ERR,'(100F14.5)') (Q(I,J), J = 1,DIM)
