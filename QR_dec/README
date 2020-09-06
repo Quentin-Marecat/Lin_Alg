@@ -15,12 +15,6 @@ gfortran '-fflags' -o 'name_exe'.x test.f90 QRgram.f90 'path_ope_mat_sub'operati
 QR HOUSEHOLDER
 gfortran '-fflags' -o 'name_exe'.x test.f90 QRhouse.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
-QR HOUSEHOLDER HESSENBERG MATRIX
-gfortran '-fflags' -o 'name_exe'.x test_hess.f90 QRhouse_hess.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
-
-QR HOUSEHOLDER TRIDIAGONAL MATRIX
-gfortran '-fflags' -o 'name_exe'.x test_tri.f90 QRhouse_tri.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
-
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 
 

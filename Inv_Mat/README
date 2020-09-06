@@ -10,8 +10,8 @@ operation_mat.f90 IS NECESSARY
 
 TO COMPUTE, PLEASE USE THE COMMAND
 
-QR INVERSION
-gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_QR.f90 'path_QRHouseholder_sub'QRhouse.f90  'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+QR INVERSION (TRIDIAG AND SYMMETRIC ALSO)
+gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_QR.f90 'path_QRHouseholder_sub'QRhouse.f90 'path_tridiag_sub'tridiag_house.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
 LU INVERSION
 gfortran '-fflags' -o 'name_exe'.x test.f90 Inv_LU.f90 'path_LU_sub'LU.f90 'path_Lin_Sys_sub'LU_Mat.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
