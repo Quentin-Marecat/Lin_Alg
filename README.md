@@ -12,6 +12,7 @@ Here is the list of all packages of the depository :
 * Matrix inversion
 * RQ process diagonalization + shift method
 * Jacobi diagonalization
+* Iterative Power diagonalization
 * A.**x** = **b** solution with residual improvement
 
 Next step :
