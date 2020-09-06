@@ -23,6 +23,22 @@ SUBROUTINE PRODMAT(DIM,M1,M2,MPROD)
 END SUBROUTINE
 
 
+SUBROUTINE NORMVECTOR(DIM,VEC,VECNORM)
+  ! --- THIS SUBROUTINE NORMALIZE THE VECTOR VEC --- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN):: DIM
+  REAL*8, INTENT(IN) :: VEC(DIM)
+  REAL*8, INTENT(OUT) :: VECNORM(DIM)
+  REAL*8 :: VECTAMP(DIM), NORM
+  INTEGER :: I
+  VECTAMP = VEC
+  CALL NORMVEC(DIM,VECTAMP,NORM)
+  DO I = 1,DIM
+    VECNORM(I) = VECTAMP(I)/NORM
+  ENDDO
+END SUBROUTINE
+
+
 
 SUBROUTINE MATAPPLI(DIM,ENDO,V0,V1)
   ! --------------------------------------------------------------------------- !
@@ -157,12 +173,31 @@ SUBROUTINE PRODVEC(DIM,MAT1,MAT2,POS1,POS2,PROD)
 END SUBROUTINE
 
 
+SUBROUTINE PRODVEC2(DIM,VEC1,VEC2,PROD)
+  ! ----------------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE COMPUTE THE VECTOR PRODUCT BETWEEN VEC1 ET VEC2 --- !
+  ! ----------------------------------------------------------------------- !
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8, INTENT(IN) :: VEC1(DIM), VEC2(DIM)
+  REAL*8, INTENT(OUT) :: PROD
+  INTEGER :: I
+
+  PROD = 0.
+  DO I = 1,DIM
+    PROD = PROD + VEC1(I)*VEC2(I)
+  ENDDO
+
+END SUBROUTINE
+
+
 
 
 SUBROUTINE ORDERING(DIM,EIGENVAL,EIGENVECT)
   ! -------------------------------------------------------------- !
   ! --- THIS SUBROUTINE ORDER THE EIGENVALUES AND EIGENVECTORS --- !
   ! -------------------------------------------------------------- !
+  IMPLICIT NONE
   INTEGER :: DIM
   REAL*8 :: EIGENVAL(DIM),EIGENVECT(DIM,DIM)
   REAL*8 :: EIGENVALTAMP(DIM),EIGENVECTTAMP(DIM,DIM), MINI
@@ -178,6 +213,47 @@ SUBROUTINE ORDERING(DIM,EIGENVAL,EIGENVECT)
               ORD(I) = J
               MINI = EIGENVALTAMP(J)
           ENDIF
+      ENDDO
+      EIGENVALTAMP(I) = MINI
+      EIGENVALTAMP(ORD(I)) = EIGENVAL(I)
+      DO J = 1,DIM
+          EIGENVECTTAMP(J,I) = EIGENVECT(J,ORD(I))
+          EIGENVECTTAMP(J,ORD(I)) = EIGENVECT(J,I)
+      ENDDO
+      EIGENVAL = EIGENVALTAMP
+      EIGENVECT = EIGENVECTTAMP
+  ENDDO
+  RETURN
+END SUBROUTINE
+
+
+
+
+
+SUBROUTINE ORDERING_0(DIM,EIGENVAL,EIGENVECT)
+  ! -------------------------------------------------------------- !
+  ! --- THIS SUBROUTINE ORDER THE EIGENVALUES AND EIGENVECTORS --- !
+  ! --- 0 VALUE ARE SKIPED --------------------------------------- !
+  ! -------------------------------------------------------------- !
+  IMPLICIT NONE
+  REAL*8, PARAMETER :: EPS0 = 1.D-15
+  INTEGER, INTENT(IN) :: DIM
+  REAL*8 :: EIGENVAL(DIM),EIGENVECT(DIM,DIM)
+  REAL*8 :: EIGENVALTAMP(DIM),EIGENVECTTAMP(DIM,DIM), MINI
+  INTEGER :: ORD(DIM)
+  INTEGER :: I,J
+  EIGENVALTAMP = EIGENVAL
+  EIGENVECTTAMP = EIGENVECT
+  DO I = 1,DIM-1
+      ORD(I) = I
+      MINI = EIGENVALTAMP(I)
+      IF (ABS(MINI) < EPS0 .AND. ABS(EIGENVALTAMP(I+1)) < EPS0) EXIT
+      DO J = I+1,DIM
+        IF (ABS(EIGENVALTAMP(J)) < EPS0 ) EXIT
+        IF (EIGENVALTAMP(J) < MINI) THEN
+            ORD(I) = J
+            MINI = EIGENVALTAMP(J)
+        ENDIF
       ENDDO
       EIGENVALTAMP(I) = MINI
       EIGENVALTAMP(ORD(I)) = EIGENVAL(I)
