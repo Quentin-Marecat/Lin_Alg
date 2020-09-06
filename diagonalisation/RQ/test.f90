@@ -58,7 +58,60 @@ PROGRAM TEST
         WRITE(OUT,'(100ES14.5)') (NOR(I),I=1,DIM)
         WRITE(OUT,'(A)') '***********************'
     ENDIF
+!    CALL WRITE_DATA(DIM,M1,EF,EV,OUT)
 
     OPEN(UNIT = 97, FILE = 'error', IOSTAT = STAT, STATUS = 'old')
     IF (STAT == 2) WRITE(6,'(A)') 'RUN SUCCESFULLY, SEE output FILE' 
 END
+
+
+
+
+
+
+
+
+
+
+
+SUBROUTINE WRITE_DATA(DIM,MAT,EIGENVEC,EIGENVAL,OUT)
+    ! ----------------------------------------------------------------------------- !
+    ! --- THIS SUBROUTINE WRITE SUPPLEMENTARY DATA OF DIAGONALIZATION ALGORITHM --- !
+    ! ----------------------------------------------------------------------------- !
+    INTEGER, INTENT(IN) :: DIM, OUT
+    REAL*8, INTENT(IN) :: MAT(DIM,DIM), EIGENVEC(DIM,DIM), EIGENVAL(DIM)
+    REAL*8 :: DIAG(DIM,DIM), MATTAMP(DIM,DIM), EIGENVECT(DIM,DIM)
+    REAL*8 :: NOR(DIM), VEC(DIM)
+    INTEGER :: I,J, NB_EV
+    NB_EV = DIM
+    DIAG = 0
+    DO I = 1,NB_EV
+        DIAG(I,I) = EIGENVAL(I)
+    ENDDO
+    IF (NB_EV == DIM) THEN
+        CALL PRODMAT(DIM,EIGENVEC,DIAG,MATTAMP)
+        CALL TRANSPOSE(DIM,EIGENVEC,EIGENVECT)
+        CALL PRODMAT(DIM,MATTAMP,EIGENVECT,MATTAMP)
+        WRITE(OUT,'(A)') ' Q*D*Q(T) - MAT = 0'
+        DO I = 1,DIM
+            WRITE(OUT,'(100ES14.5)') (MATTAMP(I,J)-MAT(I,J), J=1,NB_EV)
+        ENDDO
+        WRITE(OUT,'(A)') '***********************'
+    ENDIF
+    CALL PRODMAT(DIM,MAT,EIGENVEC,MATTAMP)
+    DO I = 1,NB_EV
+        DO J = 1,DIM
+            VEC(J) = MATTAMP(J,I) - EIGENVAL(I)*EIGENVEC(J,I)
+        ENDDO
+        CALL NORMVEC(DIM,VEC,NOR(I))
+        ENDDO
+    WRITE(OUT,'(A)') 'MAT*EIGENVEC - EIGENVAL*EIGENVEC = 0'
+    DO I = 1,DIM
+        WRITE(OUT,'(100ES14.5)')(MATTAMP(I,J) - EIGENVAL(J)*EIGENVEC(I,J),J=1,NB_EV)
+    ENDDO
+    WRITE(OUT,'(A)') '***********************'
+    WRITE(OUT,'(A)') 'NORME (MAT*EIGENVEC - EIGENVAL*EIGENVEC = 0)'
+    WRITE(OUT,'(100ES14.5)') (NOR(I),I=1,NB_EV)
+    WRITE(OUT,'(A)') '***********************'
+
+END SUBROUTINE
