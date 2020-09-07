@@ -1,7 +1,7 @@
 SUBROUTINE II_DIAG(DIM,MAT,EVAL,EIGENVEC,SYM,CHECK)
-    ! ---------------------------------------------------------------------------------------------------------- !
-    ! --- THIS SUBROUTINE FIND NEAREST EIGENVECTOR ASSOCIATED TO THE EIGENVALUE USING POWER ITERATIVE METHOD --- !
-    ! ---------------------------------------------------------------------------------------------------------- !
+    ! ------------------------------------------------------------------------------------------------------ !
+    ! --- THIS SUBROUTINE FIND THE EIGENVECTOR ASSOCIATED TO THE EIGENVALUE USING POWER ITERATIVE METHOD --- !
+    ! ------------------------------------------------------------------------------------------------------ !
     IMPLICIT NONE
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-9, SHIFT = 1.D-10
     INTEGER, PARAMETER :: MAXSTEP = 1D5
