@@ -9,7 +9,11 @@ operation_mat.f90 IS NECESSARY
 
 TO COMPUTE, PLEASE USE THE COMMAND
 
+POWER ITERATION
 gfortran '-fflags' -o 'name_exe'.x test.f90 PI_diag.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+
+INVERSE POWER ITERATION
+gfortran '-fflags' -o 'name_exe'.x test.f90 PI_inv_diag.f90 'path_ope_mat_sub'operation_mat.f90 'path_inv_mat_sub'Inv_QR.f90 'path_QR_dec_sub'QRhouse.f90 'path_tridiag_sub'tridiag_house.f90  && ./'name_exe'.x
 
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 

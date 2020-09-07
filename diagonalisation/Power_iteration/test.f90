@@ -3,6 +3,7 @@ PROGRAM TEST
     IMPLICIT NONE
     REAL*8,ALLOCATABLE :: M1(:,:)
     REAL*8, ALLOCATABLE :: EV(:),EF(:,:)
+    LOGICAL :: SYM
     INTEGER :: DIM, STAT,NB_EV
     INTEGER :: I,J,IN, OUT
     
@@ -30,7 +31,9 @@ PROGRAM TEST
     ENDDO
 
     NB_EV = 10 !!! --- NBR OF ENGVAL TO COMPUTE --- !!!
-    CALL PI_DIAG(DIM,M1,EV,EF,NB_EV,.TRUE.)
+    SYM = .TRUE.
+!    CALL PI_DIAG(DIM,M1,EV,EF,NB_EV,.TRUE.)
+    CALL PI_INV_DIAG(DIM,M1,EV,EF,NB_EV,SYM,.TRUE.)
 
     WRITE(OUT,'(A)') '***********************'
     WRITE(OUT,'(A)') 'EIGENVALUES :'
