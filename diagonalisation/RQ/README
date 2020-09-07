@@ -9,10 +9,10 @@ NO MAKEFILE IS USED
 TO COMPUTE, PLEASE USE THE COMMAND
 
 RQ ITERATION
-gfortran '-fflags' -o 'name_exe'.x test.f90 RQ_diag.f90 'path_QRhouse_sub'QRhouse_tri.f90 'path_tridiag_sub'tridiag_house.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 RQ_diag.f90 'path_QRhouse_sub'QRhouse.f90 'path_tridiag_sub'tridiag_house.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
 RQ + SHIFT ITERATION
-gfortran '-fflags' -o 'name_exe'.x test.f90 RQ_shift_diag.f90 'path_QRhouse_sub'QRhouse_tri.f90 'path_tridiag_sub'tridiag_house.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
+gfortran '-fflags' -o 'name_exe'.x test.f90 RQ_shift_diag.f90 'path_QRhouse_sub'QRhouse.f90 'path_tridiag_sub'tridiag_house.f90 'path_ope_mat_sub'operation_mat.f90 && ./'name_exe'.x
 
 WHERE '___' MUST BE REPLACE BY YOUR OWN NAME, '-FFLAGS' ARE OPTIONNALS
 

@@ -1,7 +1,7 @@
 !!! --- 3 SUBROUTINES : ---------------------- !!!
 !!! --- QRHOUSE (ANY MATRICES) --------------- !!!
-!!! --- QRHOUSE_HESS (HESSENEBRG MATRICES) --- !!!
-!!! --- QRHOUSE_TRI (SYMMETRIC MATRICES) ----- !!!
+!!! --- QRHOUSE_HESS (HESSENBERG MATRICES) --- !!!
+!!! --- QRHOUSE_TRI (TRIDIAG MATRICES) ----- !!!
 
 
 SUBROUTINE QRHOUSE(DIM,MATRIX,Q,R,CHECK)
