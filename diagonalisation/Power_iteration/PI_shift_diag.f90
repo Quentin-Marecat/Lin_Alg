@@ -1,16 +1,16 @@
-SUBROUTINE PI_INV_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,NB_EV,SYM,CHECK)
-    ! ------------------------------------------------------------------------------------ !
-    ! --- THIS SUBROUTINE FIND LOWEST EIGENVALUES/VECTORS USING POWER ITERATIVE METHOD --- !
-    ! ------------------------------------------------------------------------------------ !
+SUBROUTINE PI_SHIFT_DIAG(DIM,MAT,SHIFT,EIGENVAL,EIGENVEC,NB_EV,SYM,CHECK)
+    ! ---------------------------------------------------------------------------------------------- !
+    ! --- THIS SUBROUTINE FIND NEAREST EIGENVALUES/VECTORS OF SHIFT USING POWER ITERATIVE METHOD --- !
+    ! ---------------------------------------------------------------------------------------------- !
     IMPLICIT NONE
     REAL*8, PARAMETER :: EPS0 = 1.D-15, CONV = 1.D-12
     INTEGER, PARAMETER :: MAXSTEP = 1D5
     INTEGER, INTENT(IN) :: DIM, NB_EV
     LOGICAL, INTENT(IN) :: CHECK, SYM
-    REAL*8, INTENT(IN) :: MAT(DIM,DIM)
+    REAL*8, INTENT(IN) :: MAT(DIM,DIM), SHIFT
     REAL*8, INTENT(OUT) :: EIGENVAL(DIM), EIGENVEC(DIM,DIM)
     LOGICAL :: TEST
-    REAL*8 :: VEC(DIM), VECP1(DIM)
+    REAL*8 :: VEC(DIM), VECP1(DIM), MAT2(DIM,DIM)
     REAL*8 :: NORM, MATTAMP(DIM,DIM), DIFF, EIGENVECT(DIM,DIM)
     REAL*8 :: DIAG(DIM,DIM), NOR(DIM)
     INTEGER :: I, J, K, COMPT, ERR, STAT
@@ -30,10 +30,14 @@ SUBROUTINE PI_INV_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,NB_EV,SYM,CHECK)
     ENDIF
 
     ! --- INVERSION OF THE MATRIX --- !
+    MAT2 = MAT
+    DO I = 1,DIM
+        MAT2(I,I) = MAT(I,I) - SHIFT
+    ENDDO
     IF (SYM) THEN 
-        CALL INV_QR_SYM(DIM,MAT,MATTAMP,.FALSE.)
+        CALL INV_QR_SYM(DIM,MAT2,MATTAMP,.FALSE.)
     ELSE 
-        CALL INV_QR(DIM,MAT,MATTAMP,.FALSE.)
+        CALL INV_QR(DIM,MAT2,MATTAMP,.FALSE.)
     ENDIF
     ! -------------------------------- !
 
@@ -58,7 +62,7 @@ SUBROUTINE PI_INV_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,NB_EV,SYM,CHECK)
             IF (MOD(COMPT,10) == 0) THEN
                 CALL MATAPPLI(DIM,MAT,VEC,VECP1)
                 DO J = 1,DIM
-                    VECP1(J) = VECP1(J) - (1/NORM)*VEC(J)
+                    VECP1(J) = VECP1(J) - (1/NORM + SHIFT)*VEC(J)
                 ENDDO
                 CALL NORMVEC(DIM,VECP1,DIFF)
             ENDIF
@@ -83,7 +87,7 @@ SUBROUTINE PI_INV_DIAG(DIM,MAT,EIGENVAL,EIGENVEC,NB_EV,SYM,CHECK)
 
     DO I = 1,NB_EV
         IF (ABS(EIGENVAL(I)) > EPS0) THEN
-            EIGENVAL(I) = 1/EIGENVAL(I)
+            EIGENVAL(I) = 1/EIGENVAL(I) + SHIFT
         ENDIF
     ENDDO
     CALL ORDERING_0(DIM,EIGENVAL,EIGENVEC)

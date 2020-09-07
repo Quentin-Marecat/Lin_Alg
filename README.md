@@ -12,13 +12,13 @@ Here is the list of all packages of the depository :
 * Matrix inversion
 * RQ process diagonalization + shift method
 * Jacobi diagonalization
-* Iterative Power diagonalization
+* Iterative Power diagonalization + shift method
+* Eigenvectors using iterative method
 * A.**x** = **b** solution with residual improvement
 
 Next step :
 * SVD factorization
 * Lanczos + Davidson diagonalization
-* Eigenvectors using iterative method
 
 All rights are strictly reserved to Quentin Marecat
 For any report or suggestion, please contact quentin.marecat@etu.umontpellier.fr
