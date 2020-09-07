@@ -44,7 +44,7 @@ SUBROUTINE II_DIAG(DIM,MAT,EVAL,EIGENVEC,SYM,CHECK)
     ENDDO
     CALL NORMVECTOR(DIM,VEC,VEC)
     DO WHILE(DIFF > CONV .AND. COMPT < MAXSTEP)
-        CALL EIGENV(DIM,MATTAMP,VEC,VECP1,NORM)
+        CALL EIGENV_II(DIM,MATTAMP,VEC,VECP1,NORM)
         DIFF = 0
         DO J = 1,DIM
             DIFF = DIFF + (VECP1(J) - NORM*VEC(J))**2
@@ -113,7 +113,7 @@ END SUBROUTINE
 
 
 
-SUBROUTINE EIGENV(DIM,MAT,VEC,VECP1,EGNVAL)
+SUBROUTINE EIGENV_II(DIM,MAT,VEC,VECP1,EGNVAL)
     ! --------------------------------------------------------------------------------------- !
     ! --- THIS SUBROUTINE GIVE THE SUPPOSED EIGENVALUES OF THE MATRIX USING AVERAGE VALUE --- !
     ! --------------------------------------------------------------------------------------- !
